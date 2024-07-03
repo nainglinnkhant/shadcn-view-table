@@ -207,7 +207,15 @@ export function DataTableFilterItem<TData>({
                 prev.filter((item) => item.value !== selectedOption.value)
               )
 
-              column?.setFilterValue("")
+              const newSearchParams = createQueryString(
+                {
+                  [String(selectedOption.value)]: null,
+                },
+                searchParams
+              )
+              router.push(`${pathname}?${newSearchParams}`, {
+                scroll: false,
+              })
             }}
           >
             <TrashIcon className="size-4" aria-hidden="true" />

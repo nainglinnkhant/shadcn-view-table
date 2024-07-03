@@ -54,6 +54,8 @@ export function DataTableMultiFilter<TData>({
   setSelectedOptions,
   defaultOpen,
 }: DataTableMultiFilterProps<TData>) {
+  const router = useRouter()
+  const pathname = usePathname()
   const searchParams = useSearchParams()
 
   const currentOperator = dataTableConfig.logicalOperators.find(
@@ -102,13 +104,15 @@ export function DataTableMultiFilter<TData>({
             onClick={() => {
               setSelectedOptions((prev) => prev.filter((item) => !item.isMulti))
 
-              const tableState = table.getState()
-              const multiFilters = tableState.columnFilters.filter((filter) =>
-                options.some((option) => option.value === filter.id)
-              )
-              for (const filter of multiFilters) {
-                table.getColumn(filter.id)?.setFilterValue("")
+              const paramsObj: Record<string, null> = {}
+              for (const option of options) {
+                paramsObj[option.value as string] = null
               }
+
+              const newSearchParams = createQueryString(paramsObj, searchParams)
+              router.push(`${pathname}?${newSearchParams}`, {
+                scroll: false,
+              })
             }}
           >
             Delete filter
@@ -394,7 +398,16 @@ export function MultiFilterRow<TData>({
               setSelectedOptions((prev) =>
                 prev.filter((item) => item.id !== option.id)
               )
-              column?.setFilterValue("")
+
+              const newSearchParams = createQueryString(
+                {
+                  [String(option.value)]: null,
+                },
+                searchParams
+              )
+              router.push(`${pathname}?${newSearchParams}`, {
+                scroll: false,
+              })
             }}
           >
             <TrashIcon className="mr-2 size-4" aria-hidden="true" />
