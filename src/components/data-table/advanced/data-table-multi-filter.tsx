@@ -10,7 +10,6 @@ import {
 import type { Table } from "@tanstack/react-table"
 
 import { dataTableConfig, type DataTableConfig } from "@/config/data-table"
-import { useDebounce } from "@/hooks/use-debounce"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -95,6 +94,14 @@ export function DataTableMultiFilter<TData>({
             className="w-full justify-start"
             onClick={() => {
               setSelectedOptions((prev) => prev.filter((item) => !item.isMulti))
+
+              const tableState = table.getState()
+              const multiFilters = tableState.columnFilters.filter((filter) =>
+                options.some((option) => option.value === filter.id)
+              )
+              for (const filter of multiFilters) {
+                table.getColumn(filter.id)?.setFilterValue("")
+              }
             }}
           >
             Delete filter
@@ -135,12 +142,14 @@ export function MultiFilterRow<TData>({
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const [value, setValue] = React.useState("")
-  const debounceValue = useDebounce(value, 500)
 
   const [selectedOption, setSelectedOption] = React.useState<
     DataTableFilterOption<TData> | undefined
-  >(options[0])
+  >(option ?? options[0])
+
+  const column = table.getColumn(
+    selectedOption?.value ? String(selectedOption.value) : ""
+  )
 
   const filterVarieties = selectedOption?.options.length
     ? ["is", "is not"]
@@ -152,6 +161,8 @@ export function MultiFilterRow<TData>({
   React.useEffect(() => {
     if (selectedOption?.options.length) {
       setFilterVariety("is")
+    } else {
+      setFilterVariety("contains")
     }
   }, [selectedOption?.options.length])
 
@@ -172,34 +183,6 @@ export function MultiFilterRow<TData>({
     },
     [searchParams]
   )
-
-  // Update query string
-  React.useEffect(() => {
-    if (debounceValue.length > 0) {
-      router.push(
-        `${pathname}?${createQueryString({
-          [selectedOption?.value ?? ""]: `${debounceValue}${
-            debounceValue.length > 0 ? `.${filterVariety}` : ""
-          }`,
-        })}`,
-        {
-          scroll: false,
-        }
-      )
-    }
-
-    if (debounceValue.length === 0) {
-      router.push(
-        `${pathname}?${createQueryString({
-          [selectedOption?.value ?? ""]: null,
-        })}`,
-        {
-          scroll: false,
-        }
-      )
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debounceValue, filterVariety, selectedOption?.value])
 
   // Update operator query string
   React.useEffect(() => {
@@ -252,13 +235,20 @@ export function MultiFilterRow<TData>({
       <Select
         value={String(selectedOption?.value)}
         onValueChange={(value) => {
-          setSelectedOption(allOptions.find((option) => option.value === value))
+          const chosenOption = allOptions.find(
+            (option) => option.value === value
+          )
+          if (!chosenOption) return
+
+          setSelectedOption(chosenOption)
           setSelectedOptions((prev) =>
             prev.map((item) => {
               if (item.id === option.id) {
                 return {
                   ...item,
-                  value: value as keyof TData,
+                  value: chosenOption.value,
+                  label: chosenOption.label,
+                  options: chosenOption.options ?? [],
                 }
               }
               return item
@@ -301,28 +291,31 @@ export function MultiFilterRow<TData>({
         </SelectContent>
       </Select>
       {selectedOption?.options.length ? (
-        table.getColumn(selectedOption.value ? String(option.value) : "") && (
-          <DataTableFacetedFilter
-            key={selectedOption.id}
-            column={table.getColumn(
-              selectedOption.value ? String(selectedOption.value) : ""
-            )}
-            title={selectedOption.label}
-            options={selectedOption.options}
-          />
-        )
+        <DataTableFacetedFilter
+          key={selectedOption.id}
+          column={column}
+          title={selectedOption.label}
+          options={selectedOption.options}
+        />
       ) : (
         <Input
           placeholder="Type here..."
           className="h-8"
-          value={value}
-          onChange={(event) => setValue(event.target.value)}
+          value={column?.getFilterValue() as string}
+          onChange={(event) => {
+            column?.setFilterValue(event.target.value)
+          }}
           autoFocus
         />
       )}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="size-8 shrink-0">
+          <Button
+            variant="ghost"
+            aria-label="Open filter menus"
+            size="icon"
+            className="size-8 shrink-0"
+          >
             <DotsHorizontalIcon className="size-4" aria-hidden="true" />
           </Button>
         </DropdownMenuTrigger>
@@ -332,6 +325,7 @@ export function MultiFilterRow<TData>({
               setSelectedOptions((prev) =>
                 prev.filter((item) => item.id !== option.id)
               )
+              column?.setFilterValue("")
             }}
           >
             <TrashIcon className="mr-2 size-4" aria-hidden="true" />

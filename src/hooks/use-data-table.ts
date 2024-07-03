@@ -260,7 +260,7 @@ export function useDataTable<TData, TValue>({
     for (const column of debouncedSearchableColumnFilters) {
       if (typeof column.value === "string") {
         Object.assign(newParamsObject, {
-          [column.id]: typeof column.value === "string" ? column.value : null,
+          [column.id]: column.value,
         })
       }
     }

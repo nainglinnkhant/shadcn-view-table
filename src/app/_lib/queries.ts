@@ -28,7 +28,7 @@ export async function getTasks(input: GetTasksSchema) {
 
     // Convert the date strings to date objects
     const fromDay = from ? sql`to_date(${from}, 'yyyy-mm-dd')` : undefined
-    const toDay = to ? sql`to_date(${to}, 'yyy-mm-dd')` : undefined
+    const toDay = to ? sql`to_date(${to}, 'yyyy-mm-dd')` : undefined
 
     const expressions: (SQL<unknown> | undefined)[] = [
       title

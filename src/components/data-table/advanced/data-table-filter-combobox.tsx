@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/popover"
 
 interface DataTableFilterComboboxProps<TData> {
-  options: DataTableFilterOption<TData>[]
+  selectableOptions: DataTableFilterOption<TData>[]
   selectedOptions: DataTableFilterOption<TData>[]
   setSelectedOptions: React.Dispatch<
     React.SetStateAction<DataTableFilterOption<TData>[]>
@@ -36,7 +36,7 @@ interface DataTableFilterComboboxProps<TData> {
 }
 
 export function DataTableFilterCombobox<TData>({
-  options,
+  selectableOptions,
   selectedOptions,
   setSelectedOptions,
   onSelect,
@@ -46,7 +46,7 @@ export function DataTableFilterCombobox<TData>({
   const [open, setOpen] = React.useState(false)
   const [selectedOption, setSelectedOption] = React.useState<
     DataTableFilterOption<TData>
-  >(options[0] ?? ({} as DataTableFilterOption<TData>))
+  >(selectableOptions[0] ?? ({} as DataTableFilterOption<TData>))
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -66,45 +66,38 @@ export function DataTableFilterCombobox<TData>({
           </Button>
         )}
       </PopoverTrigger>
-      <PopoverContent className="w-[12.5rem] p-0" align="end">
+      <PopoverContent className="w-[12.5rem] p-0" align="start">
         <Command>
           <CommandInput placeholder="Filter by..." />
           <CommandList>
             <CommandEmpty>No item found.</CommandEmpty>
             <CommandGroup>
-              {options
-                .filter(
-                  (option) =>
-                    !selectedOptions.some(
-                      (selectedOption) => selectedOption.value === option.value
-                    )
-                )
-                .map((option) => (
-                  <CommandItem
-                    key={String(option.value)}
-                    className="capitalize"
-                    value={String(option.value)}
-                    onSelect={(currentValue) => {
-                      setValue(currentValue === value ? "" : currentValue)
-                      setOpen(false)
-                      setSelectedOption(option)
-                      setSelectedOptions((prev) => {
-                        return [...prev, { ...option }]
-                      })
-                      onSelect()
-                    }}
-                  >
-                    {option.options.length > 0 ? (
-                      <ChevronDownIcon
-                        className="mr-2 size-4"
-                        aria-hidden="true"
-                      />
-                    ) : (
-                      <TextIcon className="mr-2 size-4" aria-hidden="true" />
-                    )}
-                    {option.label}
-                  </CommandItem>
-                ))}
+              {selectableOptions.map((option) => (
+                <CommandItem
+                  key={String(option.value)}
+                  className="capitalize"
+                  value={String(option.value)}
+                  onSelect={(currentValue) => {
+                    setValue(currentValue === value ? "" : currentValue)
+                    setOpen(false)
+                    setSelectedOption(option)
+                    setSelectedOptions((prev) => {
+                      return [...prev, { ...option }]
+                    })
+                    onSelect()
+                  }}
+                >
+                  {option.options.length > 0 ? (
+                    <ChevronDownIcon
+                      className="mr-2 size-4"
+                      aria-hidden="true"
+                    />
+                  ) : (
+                    <TextIcon className="mr-2 size-4" aria-hidden="true" />
+                  )}
+                  {option.label}
+                </CommandItem>
+              ))}
             </CommandGroup>
             <CommandSeparator />
             <CommandGroup>

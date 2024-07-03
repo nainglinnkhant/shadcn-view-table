@@ -69,6 +69,13 @@ export function DataTableAdvancedToolbar<TData>({
     setOpenCombobox(true)
   }
 
+  const selectableOptions = options.filter(
+    (option) =>
+      !selectedOptions.some(
+        (selectedOption) => selectedOption.value === option.value
+      )
+  )
+
   return (
     <div
       className={cn(
@@ -94,12 +101,7 @@ export function DataTableAdvancedToolbar<TData>({
           </Button>
         ) : (
           <DataTableFilterCombobox
-            options={options.filter(
-              (option) =>
-                !selectedOptions.some(
-                  (selectedOption) => selectedOption.value === option.value
-                )
-            )}
+            selectableOptions={selectableOptions}
             selectedOptions={selectedOptions}
             setSelectedOptions={setSelectedOptions}
             onSelect={onFilterComboboxItemSelect}
@@ -134,9 +136,9 @@ export function DataTableAdvancedToolbar<TData>({
             defaultOpen={openCombobox}
           />
         ) : null}
-        {options.length > 0 && options.length > selectedOptions.length ? (
+        {selectableOptions.length > 0 ? (
           <DataTableFilterCombobox
-            options={options}
+            selectableOptions={selectableOptions}
             selectedOptions={selectedOptions}
             setSelectedOptions={setSelectedOptions}
             onSelect={onFilterComboboxItemSelect}

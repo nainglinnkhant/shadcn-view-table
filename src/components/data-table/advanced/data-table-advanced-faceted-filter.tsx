@@ -87,6 +87,7 @@ export function DataTableAdvancedFacetedFilter<TData, TValue>({
                   />
                 )}
                 <span>{option.label}</span>
+                {/* TODO: Show the count of the whole data or remove */}
                 {option.withCount &&
                   column?.getFacetedUniqueValues()?.get(option.value) && (
                     <span className="ml-auto flex size-4 items-center justify-center font-mono text-xs">

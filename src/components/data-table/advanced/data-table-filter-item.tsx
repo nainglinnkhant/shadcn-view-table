@@ -1,12 +1,10 @@
 import * as React from "react"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import type { DataTableFilterOption } from "@/types"
 import { TrashIcon } from "@radix-ui/react-icons"
 import type { Table } from "@tanstack/react-table"
 
 import { dataTableConfig } from "@/config/data-table"
 import { cn } from "@/lib/utils"
-import { useDebounce } from "@/hooks/use-debounce"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -42,10 +40,6 @@ export function DataTableFilterItem<TData>({
   setSelectedOptions,
   defaultOpen,
 }: DataTableFilterItemProps<TData>) {
-  const router = useRouter()
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
-
   const column = table.getColumn(
     selectedOption.value ? String(selectedOption.value) : ""
   )
@@ -65,54 +59,10 @@ export function DataTableFilterItem<TData>({
       : dataTableConfig.comparisonOperators
 
   const [value, setValue] = React.useState(filterValues[0] ?? "")
-  const debounceValue = useDebounce(value, 500)
   const [open, setOpen] = React.useState(defaultOpen)
   const [selectedOperator, setSelectedOperator] = React.useState(
     operators.find((c) => c.value === filterOperator) ?? operators[0]
   )
-
-  // Create query string
-  const createQueryString = React.useCallback(
-    (params: Record<string, string | number | null>) => {
-      const newSearchParams = new URLSearchParams(searchParams?.toString())
-
-      for (const [key, value] of Object.entries(params)) {
-        if (value === null) {
-          newSearchParams.delete(key)
-        } else {
-          newSearchParams.set(key, String(value))
-        }
-      }
-
-      return newSearchParams.toString()
-    },
-    [searchParams]
-  )
-
-  // Update query string
-  React.useEffect(() => {
-    if (selectedOption.options.length > 0) {
-      // key=value1.value2.value3~operator
-      const newSearchParams = createQueryString({
-        [String(selectedOption.value)]:
-          filterValues.length > 0
-            ? `${filterValues.join(".")}~${selectedOperator?.value}`
-            : null,
-      })
-      router.push(`${pathname}?${newSearchParams}`)
-    } else {
-      // key=value~operator
-      const newSearchParams = createQueryString({
-        [String(selectedOption.value)]:
-          debounceValue.length > 0
-            ? `${debounceValue}~${selectedOperator?.value}`
-            : null,
-      })
-      router.push(`${pathname}?${newSearchParams}`)
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedOption, debounceValue, selectedOperator])
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -186,10 +136,7 @@ export function DataTableFilterItem<TData>({
                 prev.filter((item) => item.value !== selectedOption.value)
               )
 
-              const newSearchParams = createQueryString({
-                [String(selectedOption.value)]: null,
-              })
-              router.push(`${pathname}?${newSearchParams}`)
+              column?.setFilterValue("")
             }}
           >
             <TrashIcon className="size-4" aria-hidden="true" />
@@ -210,8 +157,11 @@ export function DataTableFilterItem<TData>({
           <Input
             placeholder="Type here..."
             className="h-8"
-            value={value}
-            onChange={(event) => setValue(event.target.value)}
+            value={column?.getFilterValue() as string}
+            onChange={(event) => {
+              setValue(event.target.value)
+              column?.setFilterValue(event.target.value)
+            }}
             autoFocus
           />
         )}
