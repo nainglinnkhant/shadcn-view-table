@@ -1,3 +1,4 @@
+import { useSearchParams } from "next/navigation"
 import {
   ArrowDownIcon,
   ArrowUpIcon,
@@ -27,9 +28,14 @@ export function DataTableColumnHeader<TData, TValue>({
   title,
   className,
 }: DataTableColumnHeaderProps<TData, TValue>) {
+  const searchParams = useSearchParams()
+
   if (!column.getCanSort() && !column.getCanHide()) {
     return <div className={cn(className)}>{title}</div>
   }
+
+  const [columnName, sortOrder] = searchParams.get("sort")?.split(".") ?? []
+  const isSorted = columnName === column.id
 
   return (
     <div className={cn("flex items-center space-x-2", className)}>
@@ -37,9 +43,9 @@ export function DataTableColumnHeader<TData, TValue>({
         <DropdownMenuTrigger asChild>
           <Button
             aria-label={
-              column.getIsSorted() === "desc"
+              sortOrder === "desc" && isSorted
                 ? "Sorted descending. Click to sort ascending."
-                : column.getIsSorted() === "asc"
+                : sortOrder === "asc" && isSorted
                   ? "Sorted ascending. Click to sort descending."
                   : "Not sorted. Click to sort ascending."
             }
@@ -48,9 +54,9 @@ export function DataTableColumnHeader<TData, TValue>({
             className="-ml-3 h-8 data-[state=open]:bg-accent"
           >
             <span>{title}</span>
-            {column.getCanSort() && column.getIsSorted() === "desc" ? (
+            {column.getCanSort() && sortOrder === "desc" && isSorted ? (
               <ArrowDownIcon className="ml-2 size-4" aria-hidden="true" />
-            ) : column.getIsSorted() === "asc" ? (
+            ) : sortOrder === "asc" && isSorted ? (
               <ArrowUpIcon className="ml-2 size-4" aria-hidden="true" />
             ) : (
               <CaretSortIcon className="ml-2 size-4" aria-hidden="true" />

@@ -1,3 +1,5 @@
+import { useEffect } from "react"
+import { useSearchParams } from "next/navigation"
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -24,6 +26,18 @@ export function DataTablePagination<TData>({
   table,
   pageSizeOptions = [10, 20, 30, 40, 50],
 }: DataTablePaginationProps<TData>) {
+  const searchParams = useSearchParams()
+
+  // Update table state when search params are changed
+  useEffect(() => {
+    const page = Number(searchParams.get("page") ?? 1)
+    const perPage = Number(searchParams.get("per_page") ?? 10)
+
+    table.setPageIndex(page - 1)
+    table.setPageSize(perPage)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams])
+
   return (
     <div className="flex w-full flex-col-reverse items-center justify-between gap-4 overflow-auto p-1 sm:flex-row sm:gap-8">
       <div className="flex-1 whitespace-nowrap text-sm text-muted-foreground">
