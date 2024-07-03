@@ -11,6 +11,7 @@ import type { Table } from "@tanstack/react-table"
 
 import { dataTableConfig, type DataTableConfig } from "@/config/data-table"
 import { createQueryString } from "@/lib/utils"
+import { useDebounce } from "@/hooks/use-debounce"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -85,7 +86,6 @@ export function DataTableMultiFilter<TData>({
               option={option}
               table={table}
               allOptions={allOptions}
-              options={options}
               setSelectedOptions={setSelectedOptions}
               operator={operator}
               setOperator={setOperator}
@@ -124,7 +124,6 @@ interface MultiFilterRowProps<TData> {
   table: Table<TData>
   allOptions: DataTableFilterOption<TData>[]
   option: DataTableFilterOption<TData>
-  options: DataTableFilterOption<TData>[]
   setSelectedOptions: React.Dispatch<
     React.SetStateAction<DataTableFilterOption<TData>[]>
   >
@@ -141,7 +140,6 @@ export function MultiFilterRow<TData>({
   table,
   option,
   allOptions,
-  options,
   setSelectedOptions,
   operator,
   setOperator,
@@ -150,28 +148,63 @@ export function MultiFilterRow<TData>({
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
-  const [selectedOption, setSelectedOption] = React.useState<
-    DataTableFilterOption<TData> | undefined
-  >(option ?? options[0])
+  const [value, setValue] = React.useState("")
+  const debounceValue = useDebounce(value, 500)
 
-  const column = table.getColumn(
-    selectedOption?.value ? String(selectedOption.value) : ""
+  const column = table.getColumn(option.value ? String(option.value) : "")
+
+  const comparisonOperators =
+    option.options.length > 0
+      ? dataTableConfig.selectableOperators
+      : dataTableConfig.comparisonOperators
+
+  const [comparisonOperator, setComparisonOperator] = React.useState(
+    comparisonOperators[0]
   )
 
-  const filterVarieties = selectedOption?.options.length
-    ? ["is", "is not"]
-    : ["contains", "does not contain", "is", "is not"]
-
-  const [filterVariety, setFilterVariety] = React.useState(filterVarieties[0])
+  // Update query string
+  React.useEffect(() => {
+    if (option.options.length > 0) {
+      // key=value1.value2.value3~operator
+      const filterValues = option.filterValues ?? []
+      const newSearchParams = createQueryString(
+        {
+          [String(option.value)]:
+            filterValues.length > 0
+              ? `${filterValues.join(".")}~${comparisonOperator?.value}`
+              : null,
+        },
+        searchParams
+      )
+      router.push(`${pathname}?${newSearchParams}`, {
+        scroll: false,
+      })
+    } else {
+      // key=value~operator
+      const newSearchParams = createQueryString(
+        {
+          [String(option.value)]:
+            debounceValue.length > 0
+              ? `${debounceValue}~${comparisonOperator?.value}`
+              : null,
+        },
+        searchParams
+      )
+      router.push(`${pathname}?${newSearchParams}`, {
+        scroll: false,
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debounceValue, comparisonOperator?.value, option])
 
   // Update filter variety
   React.useEffect(() => {
-    if (selectedOption?.options.length) {
-      setFilterVariety("is")
+    if (option.options.length) {
+      setComparisonOperator(dataTableConfig.selectableOperators[0])
     } else {
-      setFilterVariety("contains")
+      setComparisonOperator(dataTableConfig.comparisonOperators[0])
     }
-  }, [selectedOption?.options.length])
+  }, [option.options.length])
 
   // Update operator query string
   React.useEffect(() => {
@@ -190,6 +223,46 @@ export function MultiFilterRow<TData>({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [operator?.value])
+
+  // Update table state when search params are changed
+  React.useEffect(() => {
+    const [value, comparisonOperator] =
+      searchParams.get(option.value as string)?.split("~") ?? []
+    const logicalOperator = searchParams.get("operator")
+
+    const currentComparisonOperator = comparisonOperators.find(
+      (operator) => operator.value === comparisonOperator
+    )
+    const currentLogicalOperator = dataTableConfig.logicalOperators.find(
+      (operator) => operator.value === logicalOperator
+    )
+
+    if (option.options.length > 0) {
+      const selectedValues = value?.split(".") ?? []
+
+      setSelectedOptions((prev) =>
+        prev.map((item) => {
+          if (item.value === column?.id) {
+            return {
+              ...item,
+              filterValues: selectedValues,
+            }
+          }
+
+          return item
+        })
+      )
+    } else {
+      setValue(value || "")
+    }
+
+    if (!currentComparisonOperator) return
+    setComparisonOperator(currentComparisonOperator)
+
+    if (!currentLogicalOperator) return
+    setOperator(currentLogicalOperator)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams])
 
   return (
     <div className="flex items-center space-x-2">
@@ -225,14 +298,13 @@ export function MultiFilterRow<TData>({
         <div key={operator?.value}>{operator?.label}</div>
       )}
       <Select
-        value={String(selectedOption?.value)}
+        value={String(option.value)}
         onValueChange={(value) => {
           const chosenOption = allOptions.find(
             (option) => option.value === value
           )
           if (!chosenOption) return
 
-          setSelectedOption(chosenOption)
           setSelectedOptions((prev) =>
             prev.map((item) => {
               if (item.id === option.id) {
@@ -249,7 +321,7 @@ export function MultiFilterRow<TData>({
         }}
       >
         <SelectTrigger className="h-8 w-full text-xs capitalize">
-          <SelectValue placeholder={selectedOption?.label} />
+          <SelectValue placeholder={option.label} />
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
@@ -266,37 +338,42 @@ export function MultiFilterRow<TData>({
         </SelectContent>
       </Select>
       <Select
-        value={filterVariety}
-        onValueChange={(value) => setFilterVariety(value)}
+        value={comparisonOperator?.value}
+        onValueChange={(value) => {
+          const newOperator = comparisonOperators.find(
+            (operator) => operator.value === value
+          )
+          setComparisonOperator(newOperator)
+        }}
       >
         <SelectTrigger className="h-8 w-full truncate px-2 py-0.5 hover:bg-muted/50">
-          <SelectValue placeholder={filterVarieties[0]} />
+          <SelectValue placeholder={comparisonOperators[0]?.label} />
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            {filterVarieties.map((variety) => (
-              <SelectItem key={variety} value={variety}>
-                {variety}
+            {comparisonOperators.map((operator) => (
+              <SelectItem key={operator.value} value={operator.value}>
+                {operator.label}
               </SelectItem>
             ))}
           </SelectGroup>
         </SelectContent>
       </Select>
-      {selectedOption?.options.length ? (
+      {option.options.length ? (
         <DataTableFacetedFilter
-          key={selectedOption.id}
+          key={option.id}
           column={column}
-          title={selectedOption.label}
-          options={selectedOption.options}
+          title={option.label}
+          options={option.options}
+          selectedOption={option}
+          setSelectedOptions={setSelectedOptions}
         />
       ) : (
         <Input
           placeholder="Type here..."
           className="h-8"
-          value={(column?.getFilterValue() as string) || ""}
-          onChange={(event) => {
-            column?.setFilterValue(event.target.value)
-          }}
+          value={value}
+          onChange={(event) => setValue(event.target.value)}
           autoFocus
         />
       )}
@@ -325,15 +402,15 @@ export function MultiFilterRow<TData>({
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => {
-              if (!selectedOption) return
+              if (!option) return
 
               setSelectedOptions((prev) => [
                 ...prev,
                 {
                   id: crypto.randomUUID(),
-                  label: selectedOption.label,
-                  value: selectedOption.value,
-                  options: selectedOption.options ?? [],
+                  label: option.label,
+                  value: option.value,
+                  options: option.options ?? [],
                   isMulti: true,
                 },
               ])

@@ -1,10 +1,12 @@
 import * as React from "react"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import type { DataTableFilterOption } from "@/types"
 import { TrashIcon } from "@radix-ui/react-icons"
 import type { Table } from "@tanstack/react-table"
 
 import { dataTableConfig } from "@/config/data-table"
-import { cn } from "@/lib/utils"
+import { cn, createQueryString } from "@/lib/utils"
+import { useDebounce } from "@/hooks/use-debounce"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -26,7 +28,6 @@ import { DataTableAdvancedFacetedFilter } from "./data-table-advanced-faceted-fi
 interface DataTableFilterItemProps<TData> {
   table: Table<TData>
   selectedOption: DataTableFilterOption<TData>
-  selectedOptions: DataTableFilterOption<TData>[]
   setSelectedOptions: React.Dispatch<
     React.SetStateAction<DataTableFilterOption<TData>[]>
   >
@@ -36,33 +37,99 @@ interface DataTableFilterItemProps<TData> {
 export function DataTableFilterItem<TData>({
   table,
   selectedOption,
-  selectedOptions,
   setSelectedOptions,
   defaultOpen,
 }: DataTableFilterItemProps<TData>) {
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
   const column = table.getColumn(
     selectedOption.value ? String(selectedOption.value) : ""
   )
 
-  const selectedValues = new Set(
-    selectedOptions.find((item) => item.value === column?.id)?.filterValues
-  )
+  const selectedValues = new Set(selectedOption.filterValues)
 
-  const filterValues = Array.from(selectedValues)
-  const filterOperator = selectedOptions.find(
-    (item) => item.value === column?.id
-  )?.filterOperator
-
-  const operators =
+  const comparisonOperators =
     selectedOption.options.length > 0
       ? dataTableConfig.selectableOperators
       : dataTableConfig.comparisonOperators
 
-  const [value, setValue] = React.useState(filterValues[0] ?? "")
+  const [value, setValue] = React.useState("")
+  const debounceValue = useDebounce(value, 500)
   const [open, setOpen] = React.useState(defaultOpen)
   const [selectedOperator, setSelectedOperator] = React.useState(
-    operators.find((c) => c.value === filterOperator) ?? operators[0]
+    comparisonOperators.find(
+      (operator) => operator.value === selectedOption.filterOperator
+    ) ?? comparisonOperators[0]
   )
+
+  React.useEffect(() => {
+    if (selectedOption.options.length > 0) {
+      // key=value1.value2.value3~operator
+      const filterValues = selectedOption.filterValues ?? []
+      const newSearchParams = createQueryString(
+        {
+          [String(selectedOption.value)]:
+            filterValues.length > 0
+              ? `${filterValues.join(".")}~${selectedOperator?.value}`
+              : null,
+        },
+        searchParams
+      )
+      router.push(`${pathname}?${newSearchParams}`, {
+        scroll: false,
+      })
+    } else {
+      // key=value~operator
+      const newSearchParams = createQueryString(
+        {
+          [String(selectedOption.value)]:
+            debounceValue.length > 0
+              ? `${debounceValue}~${selectedOperator?.value}`
+              : null,
+        },
+        searchParams
+      )
+      router.push(`${pathname}?${newSearchParams}`, {
+        scroll: false,
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedOption, debounceValue, selectedOperator?.value])
+
+  // Update table state when search params are changed
+  React.useEffect(() => {
+    const [value, comparisonOperator] =
+      searchParams.get(selectedOption.value as string)?.split("~") ?? []
+
+    const currentComparisonOperator = comparisonOperators.find(
+      (operator) => operator.value === comparisonOperator
+    )
+
+    if (selectedOption.options.length > 0) {
+      const selectedValues = value?.split(".") ?? []
+
+      setSelectedOptions((prev) =>
+        prev.map((item) => {
+          if (item.value === column?.id) {
+            return {
+              ...item,
+              filterValues: selectedValues,
+            }
+          }
+
+          return item
+        })
+      )
+    } else {
+      setValue(value || "")
+    }
+
+    if (!currentComparisonOperator) return
+    setSelectedOperator(currentComparisonOperator)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams])
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -105,7 +172,11 @@ export function DataTableFilterItem<TData>({
             <Select
               value={selectedOperator?.value}
               onValueChange={(value) =>
-                setSelectedOperator(operators.find((c) => c.value === value))
+                setSelectedOperator(
+                  comparisonOperators.find(
+                    (operator) => operator.value === value
+                  )
+                )
               }
             >
               <SelectTrigger className="h-auto w-fit truncate border-none px-2 py-0.5 text-xs hover:bg-muted/50">
@@ -113,7 +184,7 @@ export function DataTableFilterItem<TData>({
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  {operators.map((item) => (
+                  {comparisonOperators.map((item) => (
                     <SelectItem
                       key={item.value}
                       value={item.value}
@@ -157,11 +228,8 @@ export function DataTableFilterItem<TData>({
           <Input
             placeholder="Type here..."
             className="h-8"
-            value={(column?.getFilterValue() as string) || ""}
-            onChange={(event) => {
-              setValue(event.target.value)
-              column?.setFilterValue(event.target.value)
-            }}
+            value={value}
+            onChange={(event) => setValue(event.target.value)}
             autoFocus
           />
         )}

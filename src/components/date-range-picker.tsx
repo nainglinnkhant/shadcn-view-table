@@ -126,6 +126,8 @@ export function DateRangePicker({
           <Button
             variant={triggerVariant}
             size={triggerSize}
+            // to re-render the component when search params is changed
+            key={`${searchParams.get("from")}-${searchParams.get("to")}`}
             className={cn(
               "w-full justify-start truncate text-left font-normal",
               !date && "text-muted-foreground",

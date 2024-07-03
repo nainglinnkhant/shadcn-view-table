@@ -1,4 +1,4 @@
-import type { Option } from "@/types"
+import type { DataTableFilterOption, Option } from "@/types"
 import { CheckIcon, PlusCircledIcon } from "@radix-ui/react-icons"
 import type { Column } from "@tanstack/react-table"
 
@@ -25,14 +25,20 @@ interface DataTableFacetedFilterProps<TData, TValue> {
   column?: Column<TData, TValue>
   title?: string
   options: Option[]
+  selectedOption: DataTableFilterOption<TData>
+  setSelectedOptions: React.Dispatch<
+    React.SetStateAction<DataTableFilterOption<TData>[]>
+  >
 }
 
 export function DataTableFacetedFilter<TData, TValue>({
   column,
   title,
   options,
+  selectedOption,
+  setSelectedOptions,
 }: DataTableFacetedFilterProps<TData, TValue>) {
-  const selectedValues = new Set(column?.getFilterValue() as string[])
+  const selectedValues = new Set(selectedOption.filterValues)
 
   return (
     <Popover>
@@ -94,8 +100,15 @@ export function DataTableFacetedFilter<TData, TValue>({
                         selectedValues.add(option.value)
                       }
                       const filterValues = Array.from(selectedValues)
-                      column?.setFilterValue(
-                        filterValues.length ? filterValues : undefined
+                      setSelectedOptions((prev) =>
+                        prev.map((item) =>
+                          item.value === column?.id
+                            ? {
+                                ...item,
+                                filterValues,
+                              }
+                            : item
+                        )
                       )
                     }}
                   >

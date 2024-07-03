@@ -55,9 +55,6 @@ export function DataTableAdvancedFacetedFilter<TData, TValue>({
                     selectedValues.add(option.value)
                   }
                   const filterValues = Array.from(selectedValues)
-                  column?.setFilterValue(
-                    filterValues.length ? filterValues : undefined
-                  )
                   setSelectedOptions((prev) =>
                     prev.map((item) =>
                       item.value === column?.id

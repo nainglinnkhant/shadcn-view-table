@@ -69,6 +69,11 @@ export function DataTableAdvancedToolbar<TData>({
     setOpenCombobox(true)
   }
 
+  const multiFilterOptions = React.useMemo(
+    () => selectedOptions.filter((option) => option.isMulti),
+    [selectedOptions]
+  )
+
   const selectableOptions = options.filter(
     (option) =>
       !selectedOptions.some(
@@ -122,7 +127,6 @@ export function DataTableAdvancedToolbar<TData>({
               key={String(selectedOption.value)}
               table={table}
               selectedOption={selectedOption}
-              selectedOptions={selectedOptions}
               setSelectedOptions={setSelectedOptions}
               defaultOpen={openCombobox}
             />
@@ -131,7 +135,7 @@ export function DataTableAdvancedToolbar<TData>({
           <DataTableMultiFilter
             table={table}
             allOptions={options}
-            options={selectedOptions.filter((option) => option.isMulti)}
+            options={multiFilterOptions}
             setSelectedOptions={setSelectedOptions}
             defaultOpen={openCombobox}
           />
