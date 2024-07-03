@@ -10,6 +10,7 @@ import {
 import type { Table } from "@tanstack/react-table"
 
 import { dataTableConfig, type DataTableConfig } from "@/config/data-table"
+import { createQueryString } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -52,9 +53,15 @@ export function DataTableMultiFilter<TData>({
   setSelectedOptions,
   defaultOpen,
 }: DataTableMultiFilterProps<TData>) {
+  const searchParams = useSearchParams()
+
+  const currentOperator = dataTableConfig.logicalOperators.find(
+    (operator) => searchParams.get("operator") === operator.value
+  )
+
   const [open, setOpen] = React.useState(defaultOpen)
   const [operator, setOperator] = React.useState(
-    dataTableConfig.logicalOperators[0]
+    currentOperator || dataTableConfig.logicalOperators[0]
   )
 
   return (
@@ -166,31 +173,16 @@ export function MultiFilterRow<TData>({
     }
   }, [selectedOption?.options.length])
 
-  // Create query string
-  const createQueryString = React.useCallback(
-    (params: Record<string, string | number | null>) => {
-      const newSearchParams = new URLSearchParams(searchParams?.toString())
-
-      for (const [key, value] of Object.entries(params)) {
-        if (value === null) {
-          newSearchParams.delete(key)
-        } else {
-          newSearchParams.set(key, String(value))
-        }
-      }
-
-      return newSearchParams.toString()
-    },
-    [searchParams]
-  )
-
   // Update operator query string
   React.useEffect(() => {
     if (operator?.value) {
       router.push(
-        `${pathname}?${createQueryString({
-          operator: operator.value,
-        })}`,
+        `${pathname}?${createQueryString(
+          {
+            operator: operator.value,
+          },
+          searchParams
+        )}`,
         {
           scroll: false,
         }
@@ -301,7 +293,7 @@ export function MultiFilterRow<TData>({
         <Input
           placeholder="Type here..."
           className="h-8"
-          value={column?.getFilterValue() as string}
+          value={(column?.getFilterValue() as string) || ""}
           onChange={(event) => {
             column?.setFilterValue(event.target.value)
           }}

@@ -19,6 +19,7 @@ import {
 } from "@tanstack/react-table"
 import { z } from "zod"
 
+import { createQueryString } from "@/lib/utils"
 import { useDebounce } from "@/hooks/use-debounce"
 
 interface UseDataTableProps<TData, TValue> {
@@ -123,24 +124,6 @@ export function useDataTable<TData, TValue>({
     }
   }, [filterFields])
 
-  // Create query string
-  const createQueryString = React.useCallback(
-    (params: Record<string, string | number | null>) => {
-      const newSearchParams = new URLSearchParams(searchParams?.toString())
-
-      for (const [key, value] of Object.entries(params)) {
-        if (value === null) {
-          newSearchParams.delete(key)
-        } else {
-          newSearchParams.set(key, String(value))
-        }
-      }
-
-      return newSearchParams.toString()
-    },
-    [searchParams]
-  )
-
   // Initial column filters
   const initialColumnFilters: ColumnFiltersState = React.useMemo(() => {
     return Array.from(searchParams.entries()).reduce<ColumnFiltersState>(
@@ -194,10 +177,13 @@ export function useDataTable<TData, TValue>({
 
   React.useEffect(() => {
     router.push(
-      `${pathname}?${createQueryString({
-        page: pageIndex + 1,
-        per_page: pageSize,
-      })}`,
+      `${pathname}?${createQueryString(
+        {
+          page: pageIndex + 1,
+          per_page: pageSize,
+        },
+        searchParams
+      )}`,
       {
         scroll: false,
       }
@@ -216,12 +202,15 @@ export function useDataTable<TData, TValue>({
 
   React.useEffect(() => {
     router.push(
-      `${pathname}?${createQueryString({
-        page,
-        sort: sorting[0]?.id
-          ? `${sorting[0]?.id}.${sorting[0]?.desc ? "desc" : "asc"}`
-          : null,
-      })}`
+      `${pathname}?${createQueryString(
+        {
+          page,
+          sort: sorting[0]?.id
+            ? `${sorting[0]?.id}.${sorting[0]?.desc ? "desc" : "asc"}`
+            : undefined,
+        },
+        searchParams
+      )}`
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sorting])
@@ -287,7 +276,9 @@ export function useDataTable<TData, TValue>({
     }
 
     // After cumulating all the changes, push new params
-    router.push(`${pathname}?${createQueryString(newParamsObject)}`)
+    router.push(
+      `${pathname}?${createQueryString(newParamsObject, searchParams)}`
+    )
 
     table.setPageIndex(0)
 

@@ -13,6 +13,8 @@ export const searchParamsSchema = z.object({
   operator: z.enum(["and", "or"]).optional(),
 })
 
+export type SearchParams = z.infer<typeof searchParamsSchema>
+
 export const getTasksSchema = searchParamsSchema
 
 export type GetTasksSchema = z.infer<typeof getTasksSchema>

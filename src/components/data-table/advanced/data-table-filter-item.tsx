@@ -157,7 +157,7 @@ export function DataTableFilterItem<TData>({
           <Input
             placeholder="Type here..."
             className="h-8"
-            value={column?.getFilterValue() as string}
+            value={(column?.getFilterValue() as string) || ""}
             onChange={(event) => {
               setValue(event.target.value)
               column?.setFilterValue(event.target.value)

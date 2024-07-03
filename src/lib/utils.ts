@@ -1,5 +1,8 @@
+import type { ReadonlyURLSearchParams } from "next/navigation"
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+
+import type { SearchParams } from "@/app/_lib/validations"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -36,4 +39,21 @@ export function composeEventHandlers<E>(
       return ourEventHandler?.(event)
     }
   }
+}
+
+export function createQueryString(
+  params: Partial<SearchParams>,
+  searchParams: ReadonlyURLSearchParams
+) {
+  const newSearchParams = new URLSearchParams(searchParams?.toString())
+
+  for (const [key, value] of Object.entries(params)) {
+    if (value === null || value === undefined) {
+      newSearchParams.delete(key)
+    } else {
+      newSearchParams.set(key, String(value))
+    }
+  }
+
+  return newSearchParams.toString()
 }
