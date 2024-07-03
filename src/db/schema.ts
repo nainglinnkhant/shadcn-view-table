@@ -1,9 +1,8 @@
 import { pgTable } from "@/db/utils"
 import { sql } from "drizzle-orm"
-import { pgEnum, timestamp, varchar } from "drizzle-orm/pg-core"
+import { pgEnum, timestamp, uuid, varchar } from "drizzle-orm/pg-core"
 
 import { databasePrefix } from "@/lib/constants"
-import { generateId } from "@/lib/id"
 
 export const statusEnum = pgEnum(`${databasePrefix}_status`, [
   "todo",
@@ -26,9 +25,10 @@ export const priorityEnum = pgEnum(`${databasePrefix}_priority`, [
 ])
 
 export const tasks = pgTable("tasks", {
-  id: varchar("id", { length: 30 })
-    .$defaultFn(() => generateId())
-    .primaryKey(),
+  id: uuid("id")
+    .primaryKey()
+    .default(sql`uuid_generate_v4()`)
+    .notNull(),
   code: varchar("code", { length: 256 }).notNull().unique(),
   title: varchar("title", { length: 256 }),
   status: statusEnum("status").notNull().default("todo"),

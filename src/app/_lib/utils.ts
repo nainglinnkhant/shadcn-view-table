@@ -12,11 +12,8 @@ import {
 } from "@radix-ui/react-icons"
 import { customAlphabet } from "nanoid"
 
-import { generateId } from "@/lib/id"
-
-export function generateRandomTask(): Task {
+export function generateRandomTask(): Omit<Task, "id"> {
   return {
-    id: generateId(),
     code: `TASK-${customAlphabet("0123456789", 4)()}`,
     title: faker.hacker
       .phrase()
