@@ -7,7 +7,7 @@ export async function seedTasks(input: { count: number }) {
   const count = input.count ?? 100
 
   try {
-    const allTasks: Task[] = []
+    const allTasks: Omit<Task, "id">[] = []
 
     for (let i = 0; i < count; i++) {
       allTasks.push(generateRandomTask())
