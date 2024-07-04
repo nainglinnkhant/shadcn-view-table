@@ -5,7 +5,7 @@ import {
   isNotNull,
   isNull,
   not,
-  notLike,
+  notIlike,
   type Column,
   type ColumnBaseConfig,
   type ColumnDataType,
@@ -51,7 +51,7 @@ export function filterColumn({
     case "ilike":
       return ilike(column, `%${filterValue}%`)
     case "notIlike":
-      return notLike(column, `%${filterValue}%`)
+      return notIlike(column, `%${filterValue}%`)
     case "startsWith":
       return ilike(column, `${filterValue}%`)
     case "endsWith":
