@@ -28,7 +28,7 @@ export function DataTablePagination<TData>({
 }: DataTablePaginationProps<TData>) {
   const searchParams = useSearchParams()
 
-  // Update table state when search params are changed
+  // Update pagination state when pagination params are changed
   useEffect(() => {
     const page = searchParams.get("page")
     const perPage = searchParams.get("per_page")

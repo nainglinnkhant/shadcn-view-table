@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { DataTableFilterCombobox } from "@/components/data-table/advanced/data-table-filter-combobox"
 import { DataTableColumnsVisibility } from "@/components/data-table/data-table-columns-visibility"
+import type { SearchParams } from "@/app/_lib/validations"
 
 import { DataTableFilterItem } from "./data-table-filter-item"
 import { DataTableMultiFilter } from "./data-table-multi-filter"
@@ -45,13 +46,14 @@ export function DataTableAdvancedToolbar<TData>({
       .filter((option) => searchParams.has(option.value as string))
       .map((option) => {
         const value = searchParams.get(String(option.value)) as string
-        const [filterValue, filterOperator] =
+        const [filterValue, filterOperator, isMulti] =
           value?.split("~").filter(Boolean) ?? []
 
         return {
           ...option,
           filterValues: filterValue?.split(".") ?? [],
           filterOperator,
+          isMulti: !!isMulti,
         }
       })
   }, [options, searchParams])
@@ -80,6 +82,31 @@ export function DataTableAdvancedToolbar<TData>({
         (selectedOption) => selectedOption.value === option.value
       )
   )
+
+  // Update table state when search params are changed
+  React.useEffect(() => {
+    const searchParamsObj = Object.fromEntries(searchParams)
+    const newSelectedOptions: DataTableFilterOption<TData>[] = []
+
+    for (const [key, value] of Object.entries(searchParamsObj) as [
+      keyof SearchParams,
+      string,
+    ][]) {
+      const option = options.find((option) => option.value === key)
+      if (!option) continue
+
+      const [filterValue, comparisonOperator, isMulti] = value.split("~") ?? []
+      newSelectedOptions.push({
+        ...option,
+        filterValues: filterValue?.split(".") ?? [],
+        filterOperator: comparisonOperator,
+        isMulti: !!isMulti,
+      })
+    }
+
+    setSelectedOptions(newSelectedOptions)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams])
 
   return (
     <div

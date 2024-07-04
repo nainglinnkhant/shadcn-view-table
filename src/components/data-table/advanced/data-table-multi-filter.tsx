@@ -152,7 +152,7 @@ export function MultiFilterRow<TData>({
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
-  const [value, setValue] = React.useState("")
+  const value = option.filterValues?.[0] ?? ""
   const debounceValue = useDebounce(value, 500)
 
   const column = table.getColumn(option.value ? String(option.value) : "")
@@ -162,9 +162,10 @@ export function MultiFilterRow<TData>({
       ? dataTableConfig.selectableOperators
       : dataTableConfig.comparisonOperators
 
-  const [comparisonOperator, setComparisonOperator] = React.useState(
-    comparisonOperators[0]
-  )
+  const comparisonOperator =
+    comparisonOperators.find(
+      (operator) => operator.value === option.filterOperator
+    ) ?? comparisonOperators[0]
 
   // Update query string
   React.useEffect(() => {
@@ -175,7 +176,7 @@ export function MultiFilterRow<TData>({
         {
           [String(option.value)]:
             filterValues.length > 0
-              ? `${filterValues.join(".")}~${comparisonOperator?.value}`
+              ? `${filterValues.join(".")}~${comparisonOperator?.value}~multi`
               : null,
         },
         searchParams
@@ -189,7 +190,7 @@ export function MultiFilterRow<TData>({
         {
           [String(option.value)]:
             debounceValue.length > 0
-              ? `${debounceValue}~${comparisonOperator?.value}`
+              ? `${debounceValue}~${comparisonOperator?.value}~multi`
               : null,
         },
         searchParams
@@ -200,15 +201,6 @@ export function MultiFilterRow<TData>({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debounceValue, comparisonOperator?.value, option])
-
-  // Update filter variety
-  React.useEffect(() => {
-    if (option.options.length) {
-      setComparisonOperator(dataTableConfig.selectableOperators[0])
-    } else {
-      setComparisonOperator(dataTableConfig.comparisonOperators[0])
-    }
-  }, [option.options.length])
 
   // Update operator query string
   React.useEffect(() => {
@@ -228,43 +220,15 @@ export function MultiFilterRow<TData>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [operator?.value])
 
-  // Update table state when search params are changed
+  // Update operator state when operator params is changed
   React.useEffect(() => {
-    const [value, comparisonOperator] =
-      searchParams.get(option.value as string)?.split("~") ?? []
-    const logicalOperator = searchParams.get("operator")
-
-    const currentComparisonOperator = comparisonOperators.find(
-      (operator) => operator.value === comparisonOperator
-    )
-    const currentLogicalOperator = dataTableConfig.logicalOperators.find(
-      (operator) => operator.value === logicalOperator
+    const newOperator = dataTableConfig.logicalOperators.find(
+      (operator) => searchParams.get("operator") === operator.value
     )
 
-    if (option.options.length > 0) {
-      const selectedValues = value?.split(".") ?? []
-
-      setSelectedOptions((prev) =>
-        prev.map((item) => {
-          if (item.value === column?.id) {
-            return {
-              ...item,
-              filterValues: selectedValues,
-            }
-          }
-
-          return item
-        })
-      )
-    } else {
-      setValue(value || "")
+    if (operator) {
+      setOperator(newOperator)
     }
-
-    if (!currentComparisonOperator) return
-    setComparisonOperator(currentComparisonOperator)
-
-    if (!currentLogicalOperator) return
-    setOperator(currentLogicalOperator)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams])
 
@@ -344,10 +308,17 @@ export function MultiFilterRow<TData>({
       <Select
         value={comparisonOperator?.value}
         onValueChange={(value) => {
-          const newOperator = comparisonOperators.find(
-            (operator) => operator.value === value
+          setSelectedOptions((prev) =>
+            prev.map((item) => {
+              if (item.value === column?.id) {
+                return {
+                  ...item,
+                  filterOperator: value,
+                }
+              }
+              return item
+            })
           )
-          setComparisonOperator(newOperator)
         }}
       >
         <SelectTrigger className="h-8 w-full truncate px-2 py-0.5 hover:bg-muted/50">
@@ -377,7 +348,19 @@ export function MultiFilterRow<TData>({
           placeholder="Type here..."
           className="h-8"
           value={value}
-          onChange={(event) => setValue(event.target.value)}
+          onChange={(event) =>
+            setSelectedOptions((prev) =>
+              prev.map((item) => {
+                if (item.value === column?.id) {
+                  return {
+                    ...item,
+                    filterValues: [event.target.value],
+                  }
+                }
+                return item
+              })
+            )
+          }
           autoFocus
         />
       )}
