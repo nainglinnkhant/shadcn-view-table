@@ -30,11 +30,16 @@ export function DataTablePagination<TData>({
 
   // Update table state when search params are changed
   useEffect(() => {
-    const page = Number(searchParams.get("page") ?? 1)
-    const perPage = Number(searchParams.get("per_page") ?? 10)
+    const page = searchParams.get("page")
+    const perPage = searchParams.get("per_page")
 
-    table.setPageIndex(page - 1)
-    table.setPageSize(perPage)
+    if (page && !isNaN(Number(page))) {
+      table.setPageIndex(Number(page) - 1)
+    }
+
+    if (perPage && !isNaN(Number(perPage))) {
+      table.setPageSize(Number(perPage))
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams])
 

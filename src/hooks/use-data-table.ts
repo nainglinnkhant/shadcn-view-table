@@ -210,7 +210,8 @@ export function useDataTable<TData, TValue>({
             : undefined,
         },
         searchParams
-      )}`
+      )}`,
+      { scroll: false }
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sorting])
@@ -277,7 +278,8 @@ export function useDataTable<TData, TValue>({
 
     // After cumulating all the changes, push new params
     router.push(
-      `${pathname}?${createQueryString(newParamsObject, searchParams)}`
+      `${pathname}?${createQueryString(newParamsObject, searchParams)}`,
+      { scroll: false }
     )
 
     table.setPageIndex(0)
