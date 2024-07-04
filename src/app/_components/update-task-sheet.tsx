@@ -116,7 +116,7 @@ export function UpdateTaskSheet({ task, ...props }: UpdateTaskSheetProps) {
                     defaultValue={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger className="capitalize">
+                      <SelectTrigger className={field.value && "capitalize"}>
                         <SelectValue placeholder="Select a label" />
                       </SelectTrigger>
                     </FormControl>
@@ -149,7 +149,7 @@ export function UpdateTaskSheet({ task, ...props }: UpdateTaskSheetProps) {
                     defaultValue={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger className="capitalize">
+                      <SelectTrigger className={field.value && "capitalize"}>
                         <SelectValue placeholder="Select a status" />
                       </SelectTrigger>
                     </FormControl>
@@ -182,7 +182,7 @@ export function UpdateTaskSheet({ task, ...props }: UpdateTaskSheetProps) {
                     defaultValue={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger className="capitalize">
+                      <SelectTrigger className={field.value && "capitalize"}>
                         <SelectValue placeholder="Select a priority" />
                       </SelectTrigger>
                     </FormControl>
