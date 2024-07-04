@@ -52,7 +52,18 @@ export const metadata: Metadata = {
     images: [`${siteConfig.url}/og.jpg`],
   },
   icons: {
-    icon: "/favicon.ico",
+    icon: [
+      {
+        media: "(prefers-color-scheme: light)",
+        url: "/favicon-light.svg",
+        href: "/favicon-light.svg",
+      },
+      {
+        media: "(prefers-color-scheme: dark)",
+        url: "/favicon-dark.svg",
+        href: "/favicon-dark.svg",
+      },
+    ],
     shortcut: "/favicon-16x16.png",
     apple: "/apple-touch-icon.png",
   },
