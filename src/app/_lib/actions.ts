@@ -2,7 +2,7 @@
 
 import { unstable_noStore as noStore, revalidatePath } from "next/cache"
 import { db } from "@/db"
-import { tasks, type Task } from "@/db/schema"
+import { tasks, views, type Task } from "@/db/schema"
 import { takeFirstOrThrow } from "@/db/utils"
 import { asc, eq, inArray, not } from "drizzle-orm"
 import { customAlphabet } from "nanoid"
@@ -10,7 +10,22 @@ import { customAlphabet } from "nanoid"
 import { getErrorMessage } from "@/lib/handle-error"
 
 import { generateRandomTask } from "./utils"
-import type { CreateTaskSchema, UpdateTaskSchema } from "./validations"
+import {
+  createViewSchema,
+  deleteViewSchema,
+  editViewSchema,
+  type CreateTaskSchema,
+  type CreateViewSchema,
+  type DeleteViewSchema,
+  type EditViewSchema,
+  type UpdateTaskSchema,
+} from "./validations"
+
+export type CreateFormState<T> = {
+  status?: "success" | "error"
+  message?: string
+  errors?: Partial<Record<keyof T, string>>
+}
 
 export async function createTask(input: CreateTaskSchema) {
   noStore()
@@ -158,6 +173,192 @@ export async function deleteTasks(input: { ids: string[] }) {
     return {
       data: null,
       error: getErrorMessage(err),
+    }
+  }
+}
+
+type CreateViewFormState = CreateFormState<CreateViewSchema>
+
+export async function createView(
+  _prevState: CreateViewFormState,
+  formData: FormData
+): Promise<CreateViewFormState> {
+  noStore()
+
+  const name = formData.get("name")
+  const columns = formData.get("columns")
+    ? JSON.parse(formData.get("columns") as string)
+    : undefined
+  const filters = formData.get("filters")
+    ? JSON.parse(formData.get("filters") as string)
+    : undefined
+
+  const validatedFields = createViewSchema.safeParse({
+    name,
+    columns,
+    filters,
+  })
+
+  if (!validatedFields.success) {
+    const errorMap = validatedFields.error.flatten().fieldErrors
+    return {
+      status: "error",
+      message: errorMap.name?.[0] ?? "",
+    }
+  }
+
+  try {
+    await db.transaction(async (tx) => {
+      const newView = await tx
+        .insert(views)
+        .values({
+          name: validatedFields.data.name,
+          columns: validatedFields.data.columns,
+          filters: validatedFields.data.filters,
+        })
+        .returning({
+          id: views.id,
+        })
+        .then(takeFirstOrThrow)
+
+      const allViews = await db.select({ id: views.id }).from(views)
+      if (allViews.length === 10) {
+        await tx.delete(views).where(
+          eq(
+            views.id,
+            (
+              await tx
+                .select({
+                  id: views.id,
+                })
+                .from(views)
+                .limit(1)
+                .where(not(eq(views.id, newView.id)))
+                .orderBy(asc(views.createdAt))
+                .then(takeFirstOrThrow)
+            ).id
+          )
+        )
+      }
+    })
+
+    revalidatePath("/")
+
+    return {
+      status: "success",
+      message: "View created",
+    }
+  } catch (err) {
+    return {
+      status: "error",
+      message: getErrorMessage(err),
+    }
+  }
+}
+
+type EditViewFormState = CreateFormState<EditViewSchema>
+
+export async function editView(
+  _prevState: EditViewFormState,
+  formData: FormData
+): Promise<EditViewFormState> {
+  noStore()
+
+  const id = formData.get("id")
+  const name = formData.get("name")
+  const columns = formData.get("columns")
+    ? JSON.parse(formData.get("columns") as string)
+    : undefined
+  const filters = formData.get("filters")
+    ? JSON.parse(formData.get("filters") as string)
+    : undefined
+
+  const validatedFields = editViewSchema.safeParse({
+    id,
+    name,
+    columns,
+    filters,
+  })
+
+  if (!validatedFields.success) {
+    const errorMap = validatedFields.error.flatten().fieldErrors
+    return {
+      status: "error",
+      message: errorMap.name?.[0] ?? "",
+    }
+  }
+
+  try {
+    await db
+      .update(views)
+      .set({
+        name: validatedFields.data.name,
+        columns: validatedFields.data.columns,
+        filters: validatedFields.data.filters,
+      })
+      .where(eq(views.id, validatedFields.data.id))
+
+    revalidatePath("/")
+
+    return {
+      status: "success",
+      message: "View updated",
+    }
+  } catch (err) {
+    if (
+      typeof err === "object" &&
+      err &&
+      "code" in err &&
+      err.code === "23505"
+    ) {
+      return {
+        status: "error",
+        message: `A view with the name "${validatedFields.data.name}" already exists`,
+      }
+    }
+
+    return {
+      status: "error",
+      message: getErrorMessage(err),
+    }
+  }
+}
+
+type DeleteViewFormState = CreateFormState<DeleteViewSchema>
+
+export async function deleteView(
+  _prevState: DeleteViewFormState,
+  formData: FormData
+): Promise<DeleteViewFormState> {
+  noStore()
+
+  const id = formData.get("id")
+
+  const validatedFields = deleteViewSchema.safeParse({
+    id,
+  })
+
+  if (!validatedFields.success) {
+    const errorMap = validatedFields.error.flatten().fieldErrors
+    return {
+      status: "error",
+      message: errorMap.id?.[0] ?? "",
+    }
+  }
+
+  try {
+    await db.delete(views).where(eq(views.id, validatedFields.data.id))
+
+    revalidatePath("/")
+
+    return {
+      status: "success",
+      message: "View deleted",
+    }
+  } catch (err) {
+    return {
+      status: "error",
+      message: getErrorMessage(err),
     }
   }
 }

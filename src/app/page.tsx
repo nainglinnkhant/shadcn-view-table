@@ -6,7 +6,7 @@ import { DateRangePicker } from "@/components/date-range-picker"
 import { Shell } from "@/components/shell"
 
 import { TasksTable } from "./_components/tasks-table"
-import { getTasks } from "./_lib/queries"
+import { getTasks, getViews } from "./_lib/queries"
 import { searchParamsSchema } from "./_lib/validations"
 
 export interface IndexPageProps {
@@ -17,6 +17,7 @@ export default async function IndexPage({ searchParams }: IndexPageProps) {
   const search = searchParamsSchema.parse(searchParams)
 
   const tasksPromise = getTasks(search)
+  const viewsPromise = getViews()
 
   return (
     <Shell className="gap-2">
@@ -43,7 +44,7 @@ export default async function IndexPage({ searchParams }: IndexPageProps) {
          * Passing promises and consuming them using React.use for triggering the suspense fallback.
          * @see https://react.dev/reference/react/use
          */}
-        <TasksTable tasksPromise={tasksPromise} />
+        <TasksTable tasksPromise={tasksPromise} viewsPromise={viewsPromise} />
       </React.Suspense>
     </Shell>
   )

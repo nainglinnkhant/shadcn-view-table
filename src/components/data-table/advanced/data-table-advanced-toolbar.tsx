@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { useSearchParams } from "next/navigation"
+import type { View } from "@/db/schema"
 import type { DataTableFilterField, DataTableFilterOption } from "@/types"
 import { CaretSortIcon, PlusIcon } from "@radix-ui/react-icons"
 import type { Table } from "@tanstack/react-table"
@@ -14,16 +15,19 @@ import type { SearchParams } from "@/app/_lib/validations"
 
 import { DataTableFilterItem } from "./data-table-filter-item"
 import { DataTableMultiFilter } from "./data-table-multi-filter"
+import { DataTableViewsDialog } from "./views/data-table-views-dropdown"
 
 interface DataTableAdvancedToolbarProps<TData>
   extends React.HTMLAttributes<HTMLDivElement> {
   table: Table<TData>
   filterFields?: DataTableFilterField<TData>[]
+  views: Omit<View, "createdAt" | "updatedAt">[]
 }
 
 export function DataTableAdvancedToolbar<TData>({
   table,
   filterFields = [],
+  views,
   children,
   className,
   ...props
@@ -116,30 +120,34 @@ export function DataTableAdvancedToolbar<TData>({
       )}
       {...props}
     >
-      <div className="ml-auto flex items-center gap-2">
-        {children}
-        {(options.length > 0 && selectedOptions.length > 0) ||
-        openFilterBuilder ? (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setOpenFilterBuilder(!openFilterBuilder)}
-          >
-            <CaretSortIcon
-              className="mr-2 size-4 shrink-0"
-              aria-hidden="true"
+      <div className="flex items-center justify-between">
+        <DataTableViewsDialog views={views} />
+
+        <div className="flex items-center gap-2">
+          {children}
+          {(options.length > 0 && selectedOptions.length > 0) ||
+          openFilterBuilder ? (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setOpenFilterBuilder(!openFilterBuilder)}
+            >
+              <CaretSortIcon
+                className="mr-2 size-4 shrink-0"
+                aria-hidden="true"
+              />
+              Filter
+            </Button>
+          ) : (
+            <DataTableFilterCombobox
+              selectableOptions={selectableOptions}
+              selectedOptions={selectedOptions}
+              setSelectedOptions={setSelectedOptions}
+              onSelect={onFilterComboboxItemSelect}
             />
-            Filter
-          </Button>
-        ) : (
-          <DataTableFilterCombobox
-            selectableOptions={selectableOptions}
-            selectedOptions={selectedOptions}
-            setSelectedOptions={setSelectedOptions}
-            onSelect={onFilterComboboxItemSelect}
-          />
-        )}
-        <DataTableColumnsVisibility table={table} />
+          )}
+          <DataTableColumnsVisibility table={table} />
+        </div>
       </div>
       <div
         className={cn(

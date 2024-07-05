@@ -8,7 +8,7 @@ import { useDataTable } from "@/hooks/use-data-table"
 import { DataTableAdvancedToolbar } from "@/components/data-table/advanced/data-table-advanced-toolbar"
 import { DataTable } from "@/components/data-table/data-table"
 
-import type { getTasks } from "../_lib/queries"
+import type { getTasks, getViews } from "../_lib/queries"
 import { getPriorityIcon, getStatusIcon } from "../_lib/utils"
 import { getColumns } from "./tasks-table-columns"
 import { TasksTableFloatingBar } from "./tasks-table-floating-bar"
@@ -16,10 +16,12 @@ import { TasksTableToolbarActions } from "./tasks-table-toolbar-actions"
 
 interface TasksTableProps {
   tasksPromise: ReturnType<typeof getTasks>
+  viewsPromise: ReturnType<typeof getViews>
 }
 
-export function TasksTable({ tasksPromise }: TasksTableProps) {
+export function TasksTable({ tasksPromise, viewsPromise }: TasksTableProps) {
   const { data, pageCount } = React.use(tasksPromise)
+  const views = React.use(viewsPromise)
 
   // Memoize the columns so they don't re-render on every render
   const columns = React.useMemo(() => getColumns(), [])
@@ -78,7 +80,11 @@ export function TasksTable({ tasksPromise }: TasksTableProps) {
       table={table}
       floatingBar={<TasksTableFloatingBar table={table} />}
     >
-      <DataTableAdvancedToolbar table={table} filterFields={filterFields}>
+      <DataTableAdvancedToolbar
+        table={table}
+        filterFields={filterFields}
+        views={views}
+      >
         <TasksTableToolbarActions table={table} />
       </DataTableAdvancedToolbar>
     </DataTable>

@@ -2,7 +2,7 @@ import "server-only"
 
 import { unstable_noStore as noStore } from "next/cache"
 import { db } from "@/db"
-import { tasks, type Task } from "@/db/schema"
+import { tasks, views, type Task } from "@/db/schema"
 import type { DrizzleWhere } from "@/types"
 import { and, asc, count, desc, gte, lte, or, sql, type SQL } from "drizzle-orm"
 
@@ -129,4 +129,16 @@ export async function getTaskCountByPriority() {
   } catch (err) {
     return []
   }
+}
+
+export async function getViews() {
+  noStore()
+  return await db
+    .select({
+      id: views.id,
+      name: views.name,
+      columns: views.columns,
+      filters: views.filters,
+    })
+    .from(views)
 }

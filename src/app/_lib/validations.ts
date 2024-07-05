@@ -11,6 +11,7 @@ export const searchParamsSchema = z.object({
   from: z.string().optional(),
   to: z.string().optional(),
   operator: z.enum(["and", "or"]).optional(),
+  viewId: z.string().uuid().optional(),
 })
 
 export type SearchParams = z.infer<typeof searchParamsSchema>
@@ -36,3 +37,30 @@ export const updateTaskSchema = z.object({
 })
 
 export type UpdateTaskSchema = z.infer<typeof updateTaskSchema>
+
+export const createViewSchema = z.object({
+  name: z.string().min(1),
+  columns: z.string().array().optional(),
+  filters: z
+    .object({
+      field: z.enum(["title", "status", "priority"]),
+      value: z.string(),
+      isMulti: z.boolean().default(false),
+    })
+    .array()
+    .optional(),
+})
+
+export type CreateViewSchema = z.infer<typeof createViewSchema>
+
+export const editViewSchema = createViewSchema.extend({
+  id: z.string().uuid(),
+})
+
+export type EditViewSchema = z.infer<typeof editViewSchema>
+
+export const deleteViewSchema = z.object({
+  id: z.string().uuid(),
+})
+
+export type DeleteViewSchema = z.infer<typeof deleteViewSchema>

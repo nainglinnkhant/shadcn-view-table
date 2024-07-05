@@ -64,4 +64,4 @@ export const views = pgTable("views", {
     .$onUpdate(() => new Date()),
 })
 
-export type Views = typeof views.$inferSelect
+export type View = typeof views.$inferSelect
