@@ -189,14 +189,14 @@ export async function createView(
   const columns = formData.get("columns")
     ? JSON.parse(formData.get("columns") as string)
     : undefined
-  const filters = formData.get("filters")
-    ? JSON.parse(formData.get("filters") as string)
+  const filterParams = formData.get("filterParams")
+    ? JSON.parse(formData.get("filterParams") as string)
     : undefined
 
   const validatedFields = createViewSchema.safeParse({
     name,
     columns,
-    filters,
+    filterParams,
   })
 
   if (!validatedFields.success) {
@@ -214,7 +214,7 @@ export async function createView(
         .values({
           name: validatedFields.data.name,
           columns: validatedFields.data.columns,
-          filters: validatedFields.data.filters,
+          filterParams: validatedFields.data.filterParams,
         })
         .returning({
           id: views.id,
@@ -269,15 +269,15 @@ export async function editView(
   const columns = formData.get("columns")
     ? JSON.parse(formData.get("columns") as string)
     : undefined
-  const filters = formData.get("filters")
-    ? JSON.parse(formData.get("filters") as string)
+  const filterParams = formData.get("filterParams")
+    ? JSON.parse(formData.get("filterParams") as string)
     : undefined
 
   const validatedFields = editViewSchema.safeParse({
     id,
     name,
     columns,
-    filters,
+    filterParams,
   })
 
   if (!validatedFields.success) {
@@ -294,7 +294,7 @@ export async function editView(
       .set({
         name: validatedFields.data.name,
         columns: validatedFields.data.columns,
-        filters: validatedFields.data.filters,
+        filterParams: validatedFields.data.filterParams,
       })
       .where(eq(views.id, validatedFields.data.id))
 

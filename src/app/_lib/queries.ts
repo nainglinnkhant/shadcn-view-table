@@ -138,7 +138,7 @@ export async function getViews() {
       id: views.id,
       name: views.name,
       columns: views.columns,
-      filters: views.filters,
+      filterParams: views.filterParams,
     })
     .from(views)
 }

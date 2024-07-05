@@ -57,7 +57,7 @@ export const views = pgTable("views", {
     .notNull(),
   name: text("name").notNull().unique(),
   columns: text("columns").array(),
-  filters: json("filters").$type<object>().array(),
+  filterParams: json("filter_params").$type<object>(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .default(sql`current_timestamp`)

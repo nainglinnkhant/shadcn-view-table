@@ -41,14 +41,18 @@ export type UpdateTaskSchema = z.infer<typeof updateTaskSchema>
 export const createViewSchema = z.object({
   name: z.string().min(1),
   columns: z.string().array().optional(),
-  filters: z
-    .object({
-      field: z.enum(["title", "status", "priority"]),
-      value: z.string(),
-      isMulti: z.boolean().default(false),
-    })
-    .array()
-    .optional(),
+  filterParams: z.object({
+    operator: z.enum(["and", "or"]).optional(),
+    sort: z.string(),
+    filters: z
+      .object({
+        field: z.enum(["title", "status", "priority"]),
+        value: z.string(),
+        isMulti: z.boolean().default(false),
+      })
+      .array()
+      .optional(),
+  }),
 })
 
 export type CreateViewSchema = z.infer<typeof createViewSchema>
@@ -64,3 +68,7 @@ export const deleteViewSchema = z.object({
 })
 
 export type DeleteViewSchema = z.infer<typeof deleteViewSchema>
+
+export type Filter = NonNullable<
+  CreateViewSchema["filterParams"]["filters"]
+>[number]
