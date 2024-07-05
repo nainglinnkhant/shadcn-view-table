@@ -15,6 +15,13 @@
       "when": 1719859743159,
       "tag": "0001_calm_vance_astro",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1720164151190,
+      "tag": "0002_mysterious_mentallo",
+      "breakpoints": true
     }
   ]
 }

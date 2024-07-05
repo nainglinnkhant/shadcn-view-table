@@ -1,6 +1,13 @@
 import { pgTable } from "@/db/utils"
 import { sql } from "drizzle-orm"
-import { pgEnum, timestamp, uuid, varchar } from "drizzle-orm/pg-core"
+import {
+  json,
+  pgEnum,
+  text,
+  timestamp,
+  uuid,
+  varchar,
+} from "drizzle-orm/pg-core"
 
 import { databasePrefix } from "@/lib/constants"
 
@@ -42,3 +49,19 @@ export const tasks = pgTable("tasks", {
 
 export type Task = typeof tasks.$inferSelect
 export type NewTask = typeof tasks.$inferInsert
+
+export const views = pgTable("views", {
+  id: uuid("id")
+    .primaryKey()
+    .default(sql`uuid_generate_v4()`)
+    .notNull(),
+  name: text("name").notNull().unique(),
+  columns: text("columns").array(),
+  filters: json("filters").$type<object>().array(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .default(sql`current_timestamp`)
+    .$onUpdate(() => new Date()),
+})
+
+export type Views = typeof views.$inferSelect
