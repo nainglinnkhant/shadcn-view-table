@@ -258,7 +258,7 @@ export async function createView(
         id: viewId,
         name: validatedFields.data.name,
         columns: validatedFields.data.columns ?? null,
-        filterParams: validatedFields.data.filterParams,
+        filterParams: validatedFields.data.filterParams ?? null,
       },
     }
   } catch (err) {

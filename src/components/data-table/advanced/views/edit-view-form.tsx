@@ -18,8 +18,8 @@ interface EditViewFormProps {
 }
 
 export function EditViewForm({
-  setIsEditViewFormOpen,
   view,
+  setIsEditViewFormOpen,
 }: EditViewFormProps) {
   const [state, formAction] = useFormState(editView, {
     message: "",

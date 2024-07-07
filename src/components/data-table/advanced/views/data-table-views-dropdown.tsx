@@ -84,8 +84,8 @@ export function DataTableViewsDropdown({
 
         {isEditViewFormOpen && selectedView && (
           <EditViewForm
-            setIsEditViewFormOpen={setIsEditViewFormOpen}
             view={selectedView}
+            setIsEditViewFormOpen={setIsEditViewFormOpen}
           />
         )}
 
