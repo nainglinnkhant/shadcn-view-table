@@ -10,6 +10,7 @@ import {
 } from "drizzle-orm/pg-core"
 
 import { databasePrefix } from "@/lib/constants"
+import type { FilterParams } from "@/app/_lib/validations"
 
 export const statusEnum = pgEnum(`${databasePrefix}_status`, [
   "todo",
@@ -57,7 +58,7 @@ export const views = pgTable("views", {
     .notNull(),
   name: text("name").notNull().unique(),
   columns: text("columns").array(),
-  filterParams: json("filter_params").$type<object>(),
+  filterParams: json("filter_params").$type<FilterParams>(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .default(sql`current_timestamp`)

@@ -41,8 +41,12 @@ export function composeEventHandlers<E>(
   }
 }
 
+export type Params = Partial<
+  Record<keyof SearchParams, string | number | null | undefined>
+>
+
 export function createQueryString(
-  params: Partial<SearchParams>,
+  params: Params,
   searchParams: ReadonlyURLSearchParams
 ) {
   const newSearchParams = new URLSearchParams(searchParams?.toString())

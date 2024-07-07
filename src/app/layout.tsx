@@ -101,7 +101,7 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
           </div>
           <TailwindIndicator />
         </ThemeProvider>
-        <Toaster />
+        <Toaster richColors />
       </body>
     </html>
   )

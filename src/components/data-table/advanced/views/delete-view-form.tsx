@@ -1,4 +1,5 @@
 import { useEffect } from "react"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useFormState, useFormStatus } from "react-dom"
 import { toast } from "sonner"
 
@@ -15,6 +16,10 @@ export function DeleteViewForm({
   viewId,
   setIsEditViewFormOpen,
 }: DeleteViewFormProps) {
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
   const [state, formAction] = useFormState(deleteView, {
     message: "",
   })
@@ -22,10 +27,14 @@ export function DeleteViewForm({
   useEffect(() => {
     if (state.status === "success") {
       setIsEditViewFormOpen(false)
+      if (searchParams.get("viewId") === viewId) {
+        router.push(pathname)
+      }
       toast.success(state.message)
     } else if (state.status === "error") {
       toast.error(state.message)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, setIsEditViewFormOpen])
 
   return (

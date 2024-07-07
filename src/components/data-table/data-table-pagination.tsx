@@ -33,13 +33,9 @@ export function DataTablePagination<TData>({
     const page = searchParams.get("page")
     const perPage = searchParams.get("per_page")
 
-    if (page && !isNaN(Number(page))) {
-      table.setPageIndex(Number(page) - 1)
-    }
+    table.setPageIndex(page ? Number(page) - 1 : 0)
 
-    if (perPage && !isNaN(Number(perPage))) {
-      table.setPageSize(Number(perPage))
-    }
+    table.setPageSize(perPage ? Number(perPage) : 10)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams])
 

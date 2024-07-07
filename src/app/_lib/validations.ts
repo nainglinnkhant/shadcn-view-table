@@ -43,7 +43,7 @@ export const createViewSchema = z.object({
   columns: z.string().array().optional(),
   filterParams: z.object({
     operator: z.enum(["and", "or"]).optional(),
-    sort: z.string(),
+    sort: z.string().optional(),
     filters: z
       .object({
         field: z.enum(["title", "status", "priority"]),
@@ -69,6 +69,7 @@ export const deleteViewSchema = z.object({
 
 export type DeleteViewSchema = z.infer<typeof deleteViewSchema>
 
-export type Filter = NonNullable<
-  CreateViewSchema["filterParams"]["filters"]
->[number]
+export type FilterParams = NonNullable<CreateViewSchema["filterParams"]>
+export type Operator = FilterParams["operator"]
+export type Sort = FilterParams["sort"]
+export type Filter = NonNullable<FilterParams["filters"]>[number]

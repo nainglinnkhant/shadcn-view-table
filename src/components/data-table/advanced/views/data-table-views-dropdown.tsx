@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import type { View } from "@/db/schema"
 import { CaretDownIcon, Pencil1Icon, PlusIcon } from "@radix-ui/react-icons"
 
@@ -17,21 +18,40 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import type { FilterParams } from "@/app/_lib/validations"
 
 import { CreateViewForm } from "./create-view-form"
 import { EditViewForm } from "./edit-view-form"
+import { calcViewSearchParamsURL } from "./utils"
 
 export type ViewItem = Omit<View, "createdAt" | "updatedAt">
 
-interface DataTableViewsDialogProps {
+interface DataTableViewsDropdownProps {
   views: ViewItem[]
+  filterParams: FilterParams
 }
 
-export function DataTableViewsDialog({ views }: DataTableViewsDialogProps) {
+export function DataTableViewsDropdown({
+  views,
+  filterParams,
+}: DataTableViewsDropdownProps) {
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
   const [open, setOpen] = useState(false)
   const [isCreateViewFormOpen, setIsCreateViewFormOpen] = useState(false)
   const [isEditViewFormOpen, setIsEditViewFormOpen] = useState(false)
   const [selectedView, setSelectedView] = useState<ViewItem | null>(null)
+
+  const currentView = views.find(
+    (view) => view.id === searchParams.get("viewId")
+  )
+
+  function selectView(view: ViewItem) {
+    const searchParamsURL = calcViewSearchParamsURL(view)
+    router.push(`${pathname}?${searchParamsURL}`)
+  }
 
   return (
     <Popover
@@ -48,13 +68,18 @@ export function DataTableViewsDialog({ views }: DataTableViewsDialogProps) {
           size="sm"
           className="flex w-36 justify-between truncate"
         >
-          All tasks
+          {currentView?.name || "All tasks"}
           <CaretDownIcon aria-hidden="true" className="size-4 shrink-0" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[12.5rem] p-0" align="start">
         {isCreateViewFormOpen && (
-          <CreateViewForm setIsCreateViewFormOpen={setIsCreateViewFormOpen} />
+          <CreateViewForm
+            backButton
+            onBack={() => setIsCreateViewFormOpen(false)}
+            filterParams={filterParams}
+            onSuccess={() => setOpen(false)}
+          />
         )}
 
         {isEditViewFormOpen && selectedView && (
@@ -70,7 +95,13 @@ export function DataTableViewsDialog({ views }: DataTableViewsDialogProps) {
             <CommandList>
               <CommandEmpty>No item found.</CommandEmpty>
               <CommandGroup className="max-h-48">
-                <CommandItem value="All tasks" onSelect={() => {}}>
+                <CommandItem
+                  value="All tasks"
+                  onSelect={() => {
+                    router.push(pathname)
+                    setOpen(false)
+                  }}
+                >
                   All tasks
                 </CommandItem>
                 {views.map((view) => (
@@ -78,14 +109,18 @@ export function DataTableViewsDialog({ views }: DataTableViewsDialogProps) {
                     key={view.id}
                     value={view.name}
                     className="group justify-between"
-                    onSelect={() => {}}
+                    onSelect={() => {
+                      selectView(view)
+                      setOpen(false)
+                    }}
                   >
                     {view.name}
                     <Button
                       variant="ghost"
                       size="icon"
                       className="invisible size-5 hover:bg-neutral-200 group-hover:visible dark:hover:bg-neutral-700"
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation()
                         setIsEditViewFormOpen(true)
                         setSelectedView(view)
                       }}

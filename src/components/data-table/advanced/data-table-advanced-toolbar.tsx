@@ -1,11 +1,12 @@
 "use client"
 
 import * as React from "react"
-import { useSearchParams } from "next/navigation"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import type { View } from "@/db/schema"
 import type { DataTableFilterField, DataTableFilterOption } from "@/types"
 import { CaretSortIcon, PlusIcon } from "@radix-ui/react-icons"
 import type { Table } from "@tanstack/react-table"
+import isEqual from "lodash.isequal"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -15,7 +16,13 @@ import type { SearchParams } from "@/app/_lib/validations"
 
 import { DataTableFilterItem } from "./data-table-filter-item"
 import { DataTableMultiFilter } from "./data-table-multi-filter"
-import { DataTableViewsDialog } from "./views/data-table-views-dropdown"
+import { CreateViewPopover } from "./views/create-view-popover"
+import { DataTableViewsDropdown } from "./views/data-table-views-dropdown"
+import {
+  calcFilterParams,
+  calcViewSearchParamsURL,
+  getIsFiltered,
+} from "./views/utils"
 
 interface DataTableAdvancedToolbarProps<TData>
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -32,6 +39,8 @@ export function DataTableAdvancedToolbar<TData>({
   className,
   ...props
 }: DataTableAdvancedToolbarProps<TData>) {
+  const router = useRouter()
+  const pathname = usePathname()
   const searchParams = useSearchParams()
 
   const options = React.useMemo<DataTableFilterOption<TData>[]>(() => {
@@ -87,6 +96,23 @@ export function DataTableAdvancedToolbar<TData>({
       )
   )
 
+  const isFiltered = getIsFiltered(searchParams)
+
+  const currentView = views.find(
+    (view) => view.id === searchParams.get("viewId")
+  )
+
+  const filterParams = calcFilterParams(selectedOptions, searchParams)
+
+  const isUpdated = !isEqual(currentView?.filterParams, filterParams)
+
+  function resetToCurrentView() {
+    if (!currentView) return
+
+    const searchParamsURL = calcViewSearchParamsURL(currentView)
+    router.push(`${pathname}?${searchParamsURL}`)
+  }
+
   // Update table state when search params are changed
   React.useEffect(() => {
     const searchParamsObj = Object.fromEntries(searchParams)
@@ -109,6 +135,9 @@ export function DataTableAdvancedToolbar<TData>({
     }
 
     setSelectedOptions(newSelectedOptions)
+    if (newSelectedOptions.length > 0) {
+      setOpenFilterBuilder(true)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams])
 
@@ -121,7 +150,7 @@ export function DataTableAdvancedToolbar<TData>({
       {...props}
     >
       <div className="flex items-center justify-between">
-        <DataTableViewsDialog views={views} />
+        <DataTableViewsDropdown views={views} filterParams={filterParams} />
 
         <div className="flex items-center gap-2">
           {children}
@@ -151,7 +180,7 @@ export function DataTableAdvancedToolbar<TData>({
       </div>
       <div
         className={cn(
-          "flex items-center gap-2",
+          "flex h-8 items-center gap-2",
           !openFilterBuilder && "hidden"
         )}
       >
@@ -194,6 +223,24 @@ export function DataTableAdvancedToolbar<TData>({
             </Button>
           </DataTableFilterCombobox>
         ) : null}
+
+        <div className="ml-auto flex items-center gap-2">
+          {isUpdated && currentView && (
+            <Button variant="ghost" size="sm" onClick={resetToCurrentView}>
+              Reset
+            </Button>
+          )}
+
+          {isFiltered && !currentView && (
+            <CreateViewPopover selectedOptions={selectedOptions} />
+          )}
+
+          {isUpdated && currentView && (
+            <Button variant="outline" size="sm">
+              Update view
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   )
