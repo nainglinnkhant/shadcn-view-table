@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import { ChevronLeftIcon } from "@radix-ui/react-icons"
 import { useFormState, useFormStatus } from "react-dom"
 import { toast } from "sonner"
@@ -21,17 +21,24 @@ export function EditViewForm({
   view,
   setIsEditViewFormOpen,
 }: EditViewFormProps) {
+  const nameInputRef = useRef<HTMLInputElement>(null)
+
   const [state, formAction] = useFormState(editView, {
     message: "",
   })
 
   useEffect(() => {
+    nameInputRef.current?.focus()
+  }, [])
+
+  useEffect(() => {
     if (state.status === "success") {
+      setIsEditViewFormOpen(false)
       toast.success(state.message)
     } else if (state.status === "error") {
       toast.error(state.message)
     }
-  }, [state])
+  }, [state, setIsEditViewFormOpen])
 
   return (
     <div>
@@ -53,10 +60,12 @@ export function EditViewForm({
       <form action={formAction} className="flex flex-col gap-2 p-2">
         <input type="hidden" name="id" value={view.id} />
         <Input
+          ref={nameInputRef}
           type="text"
           name="name"
           placeholder="Name"
           defaultValue={view.name}
+          autoComplete="off"
         />
         <SubmitButton />
       </form>
