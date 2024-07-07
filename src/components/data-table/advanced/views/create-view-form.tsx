@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react"
+import { usePathname, useRouter } from "next/navigation"
 import { ChevronLeftIcon } from "@radix-ui/react-icons"
 import { useFormState, useFormStatus } from "react-dom"
 import { toast } from "sonner"
@@ -9,6 +10,8 @@ import { Separator } from "@/components/ui/separator"
 import { LoaderIcon } from "@/components/loader-icon"
 import { createView } from "@/app/_lib/actions"
 import type { FilterParams } from "@/app/_lib/validations"
+
+import { calcViewSearchParamsURL } from "./utils"
 
 interface CreateViewFormProps {
   backButton?: true
@@ -23,6 +26,9 @@ export function CreateViewForm({
   onBack,
   onSuccess,
 }: CreateViewFormProps) {
+  const router = useRouter()
+  const pathname = usePathname()
+
   const nameInputRef = useRef<HTMLInputElement>(null)
 
   const [state, formAction] = useFormState(createView, {
@@ -36,6 +42,10 @@ export function CreateViewForm({
   useEffect(() => {
     if (state.status === "success") {
       onSuccess?.()
+      if (state.view) {
+        const searchParamsURL = calcViewSearchParamsURL(state.view)
+        router.replace(`${pathname}?${searchParamsURL}`)
+      }
       toast.success(state.message)
     } else if (state.status === "error") {
       toast.error(state.message)

@@ -8,6 +8,7 @@ import { asc, eq, inArray, not } from "drizzle-orm"
 import { customAlphabet } from "nanoid"
 
 import { getErrorMessage } from "@/lib/handle-error"
+import type { ViewItem } from "@/components/data-table/advanced/views/data-table-views-dropdown"
 
 import { generateRandomTask } from "./utils"
 import {
@@ -177,7 +178,9 @@ export async function deleteTasks(input: { ids: string[] }) {
   }
 }
 
-type CreateViewFormState = CreateFormState<CreateViewSchema>
+type CreateViewFormState = CreateFormState<CreateViewSchema> & {
+  view?: ViewItem
+}
 
 export async function createView(
   _prevState: CreateViewFormState,
@@ -207,6 +210,8 @@ export async function createView(
     }
   }
 
+  let viewId: string = ""
+
   try {
     await db.transaction(async (tx) => {
       const newView = await tx
@@ -220,6 +225,8 @@ export async function createView(
           id: views.id,
         })
         .then(takeFirstOrThrow)
+
+      viewId = newView.id
 
       const allViews = await db.select({ id: views.id }).from(views)
       if (allViews.length === 10) {
@@ -247,6 +254,12 @@ export async function createView(
     return {
       status: "success",
       message: "View created",
+      view: {
+        id: viewId,
+        name: validatedFields.data.name,
+        columns: validatedFields.data.columns ?? null,
+        filterParams: validatedFields.data.filterParams,
+      },
     }
   } catch (err) {
     return {
