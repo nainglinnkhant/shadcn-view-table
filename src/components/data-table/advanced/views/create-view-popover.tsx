@@ -28,9 +28,7 @@ export function CreateViewPopover<T>({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="sm">
-          Save as new view
-        </Button>
+        <Button size="sm">Save as new view</Button>
       </PopoverTrigger>
       <PopoverContent className="w-[12.5rem] p-0" align="end">
         <CreateViewForm

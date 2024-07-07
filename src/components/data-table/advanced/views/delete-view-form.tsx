@@ -28,7 +28,7 @@ export function DeleteViewForm({
     if (state.status === "success") {
       setIsEditViewFormOpen(false)
       if (searchParams.get("viewId") === viewId) {
-        router.push(pathname)
+        router.replace(pathname)
       }
       toast.success(state.message)
     } else if (state.status === "error") {

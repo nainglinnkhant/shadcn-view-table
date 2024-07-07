@@ -18,6 +18,7 @@ import { DataTableFilterItem } from "./data-table-filter-item"
 import { DataTableMultiFilter } from "./data-table-multi-filter"
 import { CreateViewPopover } from "./views/create-view-popover"
 import { DataTableViewsDropdown } from "./views/data-table-views-dropdown"
+import UpdateViewForm from "./views/update-view-form"
 import {
   calcFilterParams,
   calcViewSearchParamsURL,
@@ -236,9 +237,10 @@ export function DataTableAdvancedToolbar<TData>({
           )}
 
           {isUpdated && currentView && (
-            <Button variant="outline" size="sm">
-              Update view
-            </Button>
+            <UpdateViewForm
+              currentView={currentView}
+              filterParams={filterParams}
+            />
           )}
         </div>
       </div>
