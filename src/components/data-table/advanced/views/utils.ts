@@ -20,6 +20,8 @@ export const FILTERABLE_FIELDS: (keyof SearchParams)[] = [
   "operator",
 ]
 
+export const COLUMNS = ["title", "status", "priority", "createdAt"] as const
+
 export function calcFilterParams<T = unknown>(
   selectedOptions: DataTableFilterOption<T>[],
   searchParams: ReadonlyURLSearchParams

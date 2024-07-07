@@ -4,6 +4,7 @@ import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { LoaderIcon } from "@/components/loader-icon"
+import { useTableInstanceContext } from "@/app/_components/table-instance-provider"
 import { editView } from "@/app/_lib/actions"
 import type { FilterParams } from "@/app/_lib/validations"
 
@@ -20,6 +21,16 @@ export default function UpdateViewForm({
 }: UpdateViewFormProps) {
   const [state, formAction] = useFormState(editView, { message: "" })
 
+  const { tableInstance } = useTableInstanceContext()
+
+  const visibleColumns = tableInstance
+    .getVisibleFlatColumns()
+    .filter(
+      (column) =>
+        typeof column.accessorFn !== "undefined" && column.getCanHide()
+    )
+    .map((column) => column.id)
+
   useEffect(() => {
     if (state.status === "success") {
       toast.success(state.message)
@@ -32,6 +43,11 @@ export default function UpdateViewForm({
     <form action={formAction}>
       <input type="hidden" name="id" value={currentView.id} />
       <input type="hidden" name="name" value={currentView.name} />
+      <input
+        type="hidden"
+        name="columns"
+        value={JSON.stringify(visibleColumns)}
+      />
       <input
         type="hidden"
         name="filterParams"

@@ -22,6 +22,7 @@ import UpdateViewForm from "./views/update-view-form"
 import {
   calcFilterParams,
   calcViewSearchParamsURL,
+  COLUMNS,
   getIsFiltered,
 } from "./views/utils"
 
@@ -99,13 +100,26 @@ export function DataTableAdvancedToolbar<TData>({
 
   const isFiltered = getIsFiltered(searchParams)
 
-  const currentView = views.find(
-    (view) => view.id === searchParams.get("viewId")
-  )
+  const viewId = searchParams.get("viewId")
+  const currentView = views.find((view) => view.id === viewId)
 
+  const columns = table
+    .getVisibleFlatColumns()
+    .filter(
+      (column) =>
+        typeof column.accessorFn !== "undefined" && column.getCanHide()
+    )
+    .map((column) => column.id)
   const filterParams = calcFilterParams(selectedOptions, searchParams)
 
-  const isUpdated = !isEqual(currentView?.filterParams, filterParams)
+  const isColumnsUpdated = currentView
+    ? !isEqual(currentView?.columns, columns)
+    : !isEqual(COLUMNS, columns)
+
+  const isDefaultViewUpdated = isFiltered || isColumnsUpdated
+
+  const isUpdated =
+    !isEqual(currentView?.filterParams, filterParams) || isColumnsUpdated
 
   function resetToCurrentView() {
     if (!currentView) return
@@ -113,6 +127,34 @@ export function DataTableAdvancedToolbar<TData>({
     const searchParamsURL = calcViewSearchParamsURL(currentView)
     router.push(`${pathname}?${searchParamsURL}`)
   }
+
+  React.useEffect(() => {
+    if (isColumnsUpdated) {
+      setOpenFilterBuilder(true)
+    }
+  }, [isColumnsUpdated])
+
+  // Update visible columns when viewId is changed
+  React.useEffect(() => {
+    if (!currentView) {
+      return table.setColumnVisibility({})
+    }
+
+    table.setColumnVisibility(() => {
+      const invisibleColumns = COLUMNS.filter(
+        (column) => !currentView.columns?.includes(column)
+      )
+      const newVisibilityState = invisibleColumns.reduce(
+        (acc, item) => {
+          acc[item] = false
+          return acc
+        },
+        {} as Partial<Record<(typeof COLUMNS)[number], boolean>>
+      )
+      return newVisibilityState
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [viewId])
 
   // Update table state when search params are changed
   React.useEffect(() => {
@@ -232,7 +274,7 @@ export function DataTableAdvancedToolbar<TData>({
             </Button>
           )}
 
-          {isFiltered && !currentView && (
+          {isDefaultViewUpdated && !currentView && (
             <CreateViewPopover selectedOptions={selectedOptions} />
           )}
 

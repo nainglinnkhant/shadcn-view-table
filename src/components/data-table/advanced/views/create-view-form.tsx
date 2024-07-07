@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { LoaderIcon } from "@/components/loader-icon"
+import { useTableInstanceContext } from "@/app/_components/table-instance-provider"
 import { createView } from "@/app/_lib/actions"
 import type { FilterParams } from "@/app/_lib/validations"
 
@@ -31,9 +32,19 @@ export function CreateViewForm({
 
   const nameInputRef = useRef<HTMLInputElement>(null)
 
+  const { tableInstance } = useTableInstanceContext()
+
   const [state, formAction] = useFormState(createView, {
     message: "",
   })
+
+  const visibleColumns = tableInstance
+    .getVisibleFlatColumns()
+    .filter(
+      (column) =>
+        typeof column.accessorFn !== "undefined" && column.getCanHide()
+    )
+    .map((column) => column.id)
 
   useEffect(() => {
     nameInputRef.current?.focus()
@@ -76,6 +87,11 @@ export function CreateViewForm({
       )}
 
       <form action={formAction} className="flex flex-col gap-2 p-2">
+        <input
+          type="hidden"
+          name="columns"
+          value={JSON.stringify(visibleColumns)}
+        />
         <input
           type="hidden"
           name="filterParams"

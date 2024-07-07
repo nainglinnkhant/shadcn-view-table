@@ -10,6 +10,7 @@ import { DataTable } from "@/components/data-table/data-table"
 
 import type { getTasks, getViews } from "../_lib/queries"
 import { getPriorityIcon, getStatusIcon } from "../_lib/utils"
+import { TableInstanceProvider } from "./table-instance-provider"
 import { getColumns } from "./tasks-table-columns"
 import { TasksTableFloatingBar } from "./tasks-table-floating-bar"
 import { TasksTableToolbarActions } from "./tasks-table-toolbar-actions"
@@ -76,17 +77,19 @@ export function TasksTable({ tasksPromise, viewsPromise }: TasksTableProps) {
   })
 
   return (
-    <DataTable
-      table={table}
-      floatingBar={<TasksTableFloatingBar table={table} />}
-    >
-      <DataTableAdvancedToolbar
+    <TableInstanceProvider table={table}>
+      <DataTable
         table={table}
-        filterFields={filterFields}
-        views={views}
+        floatingBar={<TasksTableFloatingBar table={table} />}
       >
-        <TasksTableToolbarActions table={table} />
-      </DataTableAdvancedToolbar>
-    </DataTable>
+        <DataTableAdvancedToolbar
+          table={table}
+          filterFields={filterFields}
+          views={views}
+        >
+          <TasksTableToolbarActions table={table} />
+        </DataTableAdvancedToolbar>
+      </DataTable>
+    </TableInstanceProvider>
   )
 }
