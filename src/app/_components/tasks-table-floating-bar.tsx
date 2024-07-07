@@ -5,7 +5,6 @@ import {
   CheckCircledIcon,
   Cross2Icon,
   DownloadIcon,
-  ReloadIcon,
   TrashIcon,
 } from "@radix-ui/react-icons"
 import { SelectTrigger } from "@radix-ui/react-select"
@@ -27,6 +26,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { Kbd } from "@/components/kbd"
+import { LoaderIcon } from "@/components/loader-icon"
 
 import { deleteTasks, updateTasks } from "../_lib/actions"
 
@@ -116,7 +116,7 @@ export function TasksTableFloatingBar({ table }: TasksTableFloatingBarProps) {
                       disabled={isPending}
                     >
                       {isPending && method === "update-status" ? (
-                        <ReloadIcon
+                        <LoaderIcon
                           className="size-3.5 animate-spin"
                           aria-hidden="true"
                         />
@@ -176,7 +176,7 @@ export function TasksTableFloatingBar({ table }: TasksTableFloatingBarProps) {
                       disabled={isPending}
                     >
                       {isPending && method === "update-priority" ? (
-                        <ReloadIcon
+                        <LoaderIcon
                           className="size-3.5 animate-spin"
                           aria-hidden="true"
                         />
@@ -223,7 +223,7 @@ export function TasksTableFloatingBar({ table }: TasksTableFloatingBarProps) {
                   disabled={isPending}
                 >
                   {isPending && method === "export" ? (
-                    <ReloadIcon
+                    <LoaderIcon
                       className="size-3.5 animate-spin"
                       aria-hidden="true"
                     />
@@ -261,7 +261,7 @@ export function TasksTableFloatingBar({ table }: TasksTableFloatingBarProps) {
                   disabled={isPending}
                 >
                   {isPending && method === "delete" ? (
-                    <ReloadIcon
+                    <LoaderIcon
                       className="size-3.5 animate-spin"
                       aria-hidden="true"
                     />

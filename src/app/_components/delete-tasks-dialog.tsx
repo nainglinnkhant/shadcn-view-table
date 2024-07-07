@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { type Task } from "@/db/schema"
-import { ReloadIcon, TrashIcon } from "@radix-ui/react-icons"
+import { TrashIcon } from "@radix-ui/react-icons"
 import { type Row } from "@tanstack/react-table"
 import { toast } from "sonner"
 
@@ -17,6 +17,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { LoaderIcon } from "@/components/loader-icon"
 
 import { deleteTasks } from "../_lib/actions"
 
@@ -73,15 +74,15 @@ export function DeleteTasksDialog({
                 }
 
                 props.onOpenChange?.(false)
-                toast.success("Tasks deleted")
+                toast.success(`${tasks.length > 1 ? "Tasks" : "Task"} deleted`)
                 onSuccess?.()
               })
             }}
             disabled={isDeletePending}
           >
             {isDeletePending && (
-              <ReloadIcon
-                className="mr-2 size-4 animate-spin"
+              <LoaderIcon
+                className="mr-1.5 size-4 animate-spin"
                 aria-hidden="true"
               />
             )}

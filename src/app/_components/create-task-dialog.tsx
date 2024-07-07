@@ -3,7 +3,7 @@
 import * as React from "react"
 import { tasks } from "@/db/schema"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { PlusIcon, ReloadIcon } from "@radix-ui/react-icons"
+import { PlusIcon } from "@radix-ui/react-icons"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 
@@ -35,6 +35,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import { LoaderIcon } from "@/components/loader-icon"
 
 import { createTask } from "../_lib/actions"
 import { createTaskSchema, type CreateTaskSchema } from "../_lib/validations"
@@ -206,8 +207,8 @@ export function CreateTaskDialog() {
               </DialogClose>
               <Button disabled={isCreatePending}>
                 {isCreatePending && (
-                  <ReloadIcon
-                    className="mr-2 size-4 animate-spin"
+                  <LoaderIcon
+                    className="mr-1.5 size-4 animate-spin"
                     aria-hidden="true"
                   />
                 )}
