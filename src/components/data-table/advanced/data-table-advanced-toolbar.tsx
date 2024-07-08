@@ -187,7 +187,7 @@ export function DataTableAdvancedToolbar<TData>({
   return (
     <div
       className={cn(
-        "flex w-full flex-col space-y-2.5 overflow-auto py-1",
+        "flex w-full flex-col space-y-2.5 overflow-auto p-1",
         className
       )}
       {...props}

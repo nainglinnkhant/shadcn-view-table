@@ -17,13 +17,13 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandSeparator,
 } from "@/components/ui/command"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { Separator } from "@/components/ui/separator"
 
 interface DataTableFilterComboboxProps<TData> {
   selectableOptions: DataTableFilterOption<TData>[]
@@ -66,8 +66,11 @@ export function DataTableFilterCombobox<TData>({
           </Button>
         )}
       </PopoverTrigger>
-      <PopoverContent className="w-[12.5rem] p-0" align="start">
-        <Command>
+      <PopoverContent
+        className="w-[12.5rem] p-0 dark:bg-background/95 dark:backdrop-blur-md dark:supports-[backdrop-filter]:bg-background/40"
+        align="start"
+      >
+        <Command className="dark:bg-transparent">
           <CommandInput placeholder="Filter by..." />
           <CommandList>
             <CommandEmpty>No item found.</CommandEmpty>
@@ -99,7 +102,7 @@ export function DataTableFilterCombobox<TData>({
                 </CommandItem>
               ))}
             </CommandGroup>
-            <CommandSeparator />
+            <Separator />
             <CommandGroup>
               <CommandItem
                 onSelect={() => {

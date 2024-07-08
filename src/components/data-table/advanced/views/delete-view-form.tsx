@@ -52,7 +52,7 @@ function SubmitButton() {
       disabled={pending}
       variant="outline"
       size="sm"
-      className="w-full border-red-800/50 text-red-600 hover:bg-destructive/10 hover:text-red-600 active:bg-destructive/10"
+      className="w-full border-red-800/50 bg-destructive/5 text-red-600 hover:bg-destructive/10 hover:text-red-600 active:bg-destructive/10"
     >
       {pending ? (
         <LoaderIcon aria-hidden="true" className="size-3.5 animate-spin" />

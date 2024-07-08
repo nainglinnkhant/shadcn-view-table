@@ -128,7 +128,10 @@ export function DataTableFilterItem<TData>({
               )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-60 space-y-1.5 p-2" align="start">
+      <PopoverContent
+        className="w-60 space-y-1.5 p-2 dark:bg-background/95 dark:backdrop-blur-md dark:supports-[backdrop-filter]:bg-background/40"
+        align="start"
+      >
         <div className="flex items-center space-x-1 pl-1 pr-0.5">
           <div className="flex flex-1 items-center space-x-1">
             <div className="text-xs capitalize text-muted-foreground">
@@ -153,7 +156,7 @@ export function DataTableFilterItem<TData>({
               <SelectTrigger className="h-auto w-fit truncate border-none px-2 py-0.5 text-xs hover:bg-muted/50">
                 <SelectValue placeholder={selectedOperator?.label} />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="dark:bg-background/95 dark:backdrop-blur-md dark:supports-[backdrop-filter]:bg-background/40">
                 <SelectGroup>
                   {comparisonOperators.map((item) => (
                     <SelectItem

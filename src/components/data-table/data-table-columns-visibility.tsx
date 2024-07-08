@@ -33,7 +33,10 @@ export function DataTableColumnsVisibility<TData>({
           Columns
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-40">
+      <DropdownMenuContent
+        align="end"
+        className="w-40 dark:bg-background/95 dark:backdrop-blur-md dark:supports-[backdrop-filter]:bg-background/40"
+      >
         <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {table

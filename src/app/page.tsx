@@ -37,7 +37,8 @@ export default async function IndexPage({ searchParams }: IndexPageProps) {
          */}
         <DateRangePicker
           triggerSize="sm"
-          triggerClassName="ml-auto w-56 sm:w-60"
+          triggerClassName="ml-auto w-56 sm:w-60 mr-1"
+          className="dark:bg-background/95 dark:backdrop-blur-md dark:supports-[backdrop-filter]:bg-background/50"
           align="end"
         />
         {/**

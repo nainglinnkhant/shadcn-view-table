@@ -31,7 +31,7 @@ export function DataTableAdvancedFacetedFilter<TData, TValue>({
   setSelectedOptions,
 }: DataTableAdvancedFacetedFilterProps<TData, TValue>) {
   return (
-    <Command className="p-1">
+    <Command className="p-1 dark:bg-transparent">
       <div className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm [&_[cmdk-input-wrapper]]:border-0 [&_[cmdk-input-wrapper]]:px-0">
         <CommandInput
           placeholder={title}

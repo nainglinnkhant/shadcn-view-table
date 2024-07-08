@@ -11,13 +11,13 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandSeparator,
 } from "@/components/ui/command"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { Separator } from "@/components/ui/separator"
 import type { FilterParams } from "@/app/_lib/validations"
 
 import { CreateViewForm } from "./create-view-form"
@@ -72,7 +72,10 @@ export function DataTableViewsDropdown({
           <CaretDownIcon aria-hidden="true" className="size-4 shrink-0" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[12.5rem] p-0" align="start">
+      <PopoverContent
+        className="w-[12.5rem] p-0 dark:bg-background/95 dark:backdrop-blur-md dark:supports-[backdrop-filter]:bg-background/40"
+        align="start"
+      >
         {isCreateViewFormOpen && (
           <CreateViewForm
             backButton
@@ -90,7 +93,7 @@ export function DataTableViewsDropdown({
         )}
 
         {!isCreateViewFormOpen && !isEditViewFormOpen && (
-          <Command>
+          <Command className="dark:bg-transparent">
             <CommandInput placeholder="View name" />
             <CommandList>
               <CommandEmpty>No item found.</CommandEmpty>
@@ -130,7 +133,7 @@ export function DataTableViewsDropdown({
                   </CommandItem>
                 ))}
               </CommandGroup>
-              <CommandSeparator />
+              <Separator />
               <CommandGroup>
                 <CommandItem onSelect={() => setIsCreateViewFormOpen(true)}>
                   <PlusIcon className="mr-2 size-4" aria-hidden="true" />

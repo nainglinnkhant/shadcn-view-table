@@ -182,7 +182,10 @@ export function getColumns(): ColumnDef<Task>[] {
                   <DotsHorizontalIcon className="size-4" aria-hidden="true" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-40">
+              <DropdownMenuContent
+                align="end"
+                className="w-40 overflow-visible dark:bg-background/95 dark:backdrop-blur-md dark:supports-[backdrop-filter]:bg-background/40"
+              >
                 <DropdownMenuItem onSelect={() => setShowUpdateTaskSheet(true)}>
                   Edit
                 </DropdownMenuItem>

@@ -23,7 +23,10 @@ export function ModeToggle() {
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent
+        align="end"
+        className="dark:bg-background/95 dark:backdrop-blur-md dark:supports-[backdrop-filter]:bg-background/40"
+      >
         <DropdownMenuItem onClick={() => setTheme("light")}>
           <SunIcon className="mr-2 size-4" />
           <span>Light</span>

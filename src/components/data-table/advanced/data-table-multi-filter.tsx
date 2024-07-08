@@ -79,7 +79,10 @@ export function DataTableMultiFilter<TData>({
           {options.length} rule
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-fit p-0 text-xs" align="start">
+      <PopoverContent
+        className="w-fit p-0 text-xs dark:bg-background/95 dark:backdrop-blur-md dark:supports-[backdrop-filter]:bg-background/40"
+        align="start"
+      >
         <div className="space-y-2 p-4">
           {options.map((option, i) => (
             <MultiFilterRow
@@ -248,7 +251,7 @@ export function MultiFilterRow<TData>({
           <SelectTrigger className="h-8 w-fit text-xs">
             <SelectValue placeholder={operator?.label} />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="dark:bg-background/95 dark:backdrop-blur-md dark:supports-[backdrop-filter]:bg-background/40">
             <SelectGroup>
               {dataTableConfig.logicalOperators.map((operator) => (
                 <SelectItem
@@ -291,7 +294,7 @@ export function MultiFilterRow<TData>({
         <SelectTrigger className="h-8 w-full text-xs capitalize">
           <SelectValue placeholder={option.label} />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="dark:bg-background/95 dark:backdrop-blur-md dark:supports-[backdrop-filter]:bg-background/40">
           <SelectGroup>
             {allOptions.map((option) => (
               <SelectItem
@@ -324,7 +327,7 @@ export function MultiFilterRow<TData>({
         <SelectTrigger className="h-8 w-full truncate px-2 py-0.5 hover:bg-muted/50">
           <SelectValue placeholder={comparisonOperators[0]?.label} />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="dark:bg-background/95 dark:backdrop-blur-md dark:supports-[backdrop-filter]:bg-background/40">
           <SelectGroup>
             {comparisonOperators.map((operator) => (
               <SelectItem key={operator.value} value={operator.value}>
@@ -375,7 +378,7 @@ export function MultiFilterRow<TData>({
             <DotsHorizontalIcon className="size-4" aria-hidden="true" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent>
+        <DropdownMenuContent className="dark:bg-background/95 dark:backdrop-blur-md dark:supports-[backdrop-filter]:bg-background/40">
           <DropdownMenuItem
             onClick={() => {
               setSelectedOptions((prev) =>

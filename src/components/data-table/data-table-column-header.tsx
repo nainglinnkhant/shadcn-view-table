@@ -63,7 +63,10 @@ export function DataTableColumnHeader<TData, TValue>({
             )}
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
+        <DropdownMenuContent
+          align="start"
+          className="dark:bg-background/95 dark:backdrop-blur-md dark:supports-[backdrop-filter]:bg-background/40"
+        >
           {column.getCanSort() && (
             <>
               <DropdownMenuItem

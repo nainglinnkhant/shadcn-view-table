@@ -30,7 +30,10 @@ export function CreateViewPopover<T>({
       <PopoverTrigger asChild>
         <Button size="sm">Save as new view</Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[12.5rem] p-0" align="end">
+      <PopoverContent
+        className="w-[12.5rem] p-0 dark:bg-background/95 dark:backdrop-blur-md dark:supports-[backdrop-filter]:bg-background/40"
+        align="end"
+      >
         <CreateViewForm
           filterParams={filterParams}
           onSuccess={() => setOpen(false)}
