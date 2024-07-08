@@ -278,12 +278,11 @@ export function DataTableAdvancedToolbar<TData>({
             <CreateViewPopover selectedOptions={selectedOptions} />
           )}
 
-          {isUpdated && currentView && (
-            <UpdateViewForm
-              currentView={currentView}
-              filterParams={filterParams}
-            />
-          )}
+          <UpdateViewForm
+            isUpdated={isUpdated}
+            currentView={currentView}
+            filterParams={filterParams}
+          />
         </div>
       </div>
     </div>

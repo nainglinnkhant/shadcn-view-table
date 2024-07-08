@@ -11,11 +11,13 @@ import type { FilterParams } from "@/app/_lib/validations"
 import type { ViewItem } from "./data-table-views-dropdown"
 
 interface UpdateViewFormProps {
-  currentView: ViewItem
+  isUpdated: boolean
+  currentView: ViewItem | undefined
   filterParams: FilterParams
 }
 
 export default function UpdateViewForm({
+  isUpdated,
   currentView,
   filterParams,
 }: UpdateViewFormProps) {
@@ -38,6 +40,8 @@ export default function UpdateViewForm({
       toast.error(state.message)
     }
   }, [state])
+
+  if (!isUpdated || !currentView) return
 
   return (
     <form action={formAction}>

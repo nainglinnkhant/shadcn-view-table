@@ -36,9 +36,7 @@ export function calcFilterParams<T = unknown>(
   const filterParams: FilterParams = {
     filters: filterItems,
   }
-  if (searchParams.get("operator")) {
-    filterParams.operator = searchParams.get("operator") as Operator
-  }
+  filterParams.operator = (searchParams.get("operator") as Operator) || "and"
   if (searchParams.get("sort")) {
     filterParams.sort = searchParams.get("sort") as Sort
   }
@@ -76,6 +74,10 @@ export function getIsFiltered(searchParams: ReadonlyURLSearchParams) {
     string,
   ][]) {
     if (key === "sort" && value === "createdAt.desc") {
+      continue
+    }
+
+    if (key === "operator" && value === "and") {
       continue
     }
 
