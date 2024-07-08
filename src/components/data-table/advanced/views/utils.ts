@@ -16,8 +16,6 @@ export const FILTERABLE_FIELDS: (keyof SearchParams)[] = [
   "title",
   "status",
   "priority",
-  "sort",
-  "operator",
 ]
 
 export const COLUMNS = ["title", "status", "priority", "createdAt"] as const
@@ -36,9 +34,7 @@ export function calcFilterParams<T = unknown>(
   const filterParams: FilterParams = {
     filters: filterItems,
   }
-  if (searchParams.get("operator")) {
-    filterParams.operator = searchParams.get("operator") as Operator
-  }
+  filterParams.operator = (searchParams.get("operator") as Operator) || "and"
   if (searchParams.get("sort")) {
     filterParams.sort = searchParams.get("sort") as Sort
   }
@@ -71,14 +67,10 @@ export function calcViewSearchParamsURL(view: ViewItem) {
 export function getIsFiltered(searchParams: ReadonlyURLSearchParams) {
   const filters = []
   const filterObj = Object.fromEntries(searchParams)
-  for (const [key, value] of Object.entries(filterObj) as [
+  for (const [key] of Object.entries(filterObj) as [
     keyof SearchParams,
     string,
   ][]) {
-    if (key === "sort" && value === "createdAt.desc") {
-      continue
-    }
-
     if (FILTERABLE_FIELDS.includes(key)) {
       filters.push(key)
     }
