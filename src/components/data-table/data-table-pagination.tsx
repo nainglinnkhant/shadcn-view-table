@@ -1,4 +1,3 @@
-import { useEffect } from "react"
 import { useSearchParams } from "next/navigation"
 import {
   ChevronLeftIcon,
@@ -28,16 +27,8 @@ export function DataTablePagination({
 
   const { tableInstance: table } = useTableInstanceContext()
 
-  const page = searchParams.get("page")
-  const perPage = searchParams.get("per_page")
-
-  // Update pagination state when pagination params are changed
-  useEffect(() => {
-    table.setPageIndex(page ? Number(page) - 1 : 0)
-
-    table.setPageSize(perPage ? Number(perPage) : 10)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, perPage])
+  const page = searchParams.get("page") ?? 1
+  const perPage = searchParams.get("per_page") ?? 10
 
   return (
     <div className="flex w-full flex-col-reverse items-center justify-between gap-4 overflow-auto p-1 sm:flex-row sm:gap-8">
@@ -49,7 +40,7 @@ export function DataTablePagination({
         <div className="flex items-center space-x-2">
           <p className="whitespace-nowrap text-sm font-medium">Rows per page</p>
           <Select
-            value={`${table.getState().pagination.pageSize}`}
+            value={`${perPage}`}
             onValueChange={(value) => {
               table.setPageIndex(0)
               table.setPageSize(Number(value))
@@ -71,8 +62,7 @@ export function DataTablePagination({
           </Select>
         </div>
         <div className="flex items-center justify-center text-sm font-medium">
-          Page {table.getState().pagination.pageIndex + 1} of{" "}
-          {table.getPageCount()}
+          Page {page} of {table.getPageCount()}
         </div>
         <div className="flex items-center space-x-2">
           <Button

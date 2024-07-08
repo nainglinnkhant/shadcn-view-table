@@ -117,11 +117,11 @@ export function DataTableViewsDropdown({
                       setOpen(false)
                     }}
                   >
-                    {view.name}
+                    <span className="truncate">{view.name}</span>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="invisible size-5 hover:bg-neutral-200 group-hover:visible dark:hover:bg-neutral-700"
+                      className="invisible size-5 shrink-0 hover:bg-neutral-200 group-hover:visible dark:hover:bg-neutral-700"
                       onClick={(e) => {
                         e.stopPropagation()
                         setIsEditViewFormOpen(true)
