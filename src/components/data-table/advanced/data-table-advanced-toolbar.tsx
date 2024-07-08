@@ -254,6 +254,7 @@ export function DataTableAdvancedToolbar<TData>({
           <DataTableMultiFilter
             allOptions={options}
             options={multiFilterOptions}
+            selectedOptions={selectedOptions}
             setSelectedOptions={setSelectedOptions}
             defaultOpen={openCombobox}
           />

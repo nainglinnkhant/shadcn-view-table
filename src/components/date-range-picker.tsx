@@ -76,10 +76,10 @@ export function DateRangePicker({
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
-  const [date, setDate] = React.useState<DateRange | undefined>(() => {
-    const fromParam = searchParams.get("from")
-    const toParam = searchParams.get("to")
+  const fromParam = searchParams.get("from")
+  const toParam = searchParams.get("to")
 
+  function calcDateRange() {
     let fromDay: Date | undefined
     let toDay: Date | undefined
 
@@ -95,7 +95,11 @@ export function DateRangePicker({
       from: fromParam ? new Date(fromParam) : fromDay,
       to: toParam ? new Date(toParam) : toDay,
     }
-  })
+  }
+
+  const [date, setDate] = React.useState<DateRange | undefined>(() =>
+    calcDateRange()
+  )
 
   // Update query string
   React.useEffect(() => {
@@ -119,6 +123,14 @@ export function DateRangePicker({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [date?.from, date?.to])
 
+  React.useEffect(() => {
+    const dateRange = calcDateRange()
+
+    setDate(dateRange)
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fromParam, toParam])
+
   return (
     <div className="grid gap-2">
       <Popover>
@@ -126,8 +138,6 @@ export function DateRangePicker({
           <Button
             variant={triggerVariant}
             size={triggerSize}
-            // to re-render the component when search params is changed
-            key={`${searchParams.get("from")}-${searchParams.get("to")}`}
             className={cn(
               "w-full justify-start truncate text-left font-normal",
               !date && "text-muted-foreground",

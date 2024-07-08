@@ -40,6 +40,7 @@ import { useTableInstanceContext } from "../table-instance-provider"
 interface DataTableMultiFilterProps<TData> {
   allOptions: DataTableFilterOption<TData>[]
   options: DataTableFilterOption<TData>[]
+  selectedOptions: DataTableFilterOption<TData>[]
   setSelectedOptions: React.Dispatch<
     React.SetStateAction<DataTableFilterOption<TData>[]>
   >
@@ -49,6 +50,7 @@ interface DataTableMultiFilterProps<TData> {
 export function DataTableMultiFilter<TData>({
   allOptions,
   options,
+  selectedOptions,
   setSelectedOptions,
   defaultOpen,
 }: DataTableMultiFilterProps<TData>) {
@@ -62,7 +64,7 @@ export function DataTableMultiFilter<TData>({
 
   const [open, setOpen] = React.useState(defaultOpen)
   const [operator, setOperator] = React.useState(
-    currentOperator || dataTableConfig.logicalOperators[0]
+    currentOperator ?? dataTableConfig.logicalOperators[0]
   )
 
   return (
@@ -88,6 +90,7 @@ export function DataTableMultiFilter<TData>({
               i={i}
               option={option}
               allOptions={allOptions}
+              selectedOptions={selectedOptions}
               setSelectedOptions={setSelectedOptions}
               operator={operator}
               setOperator={setOperator}
@@ -128,6 +131,7 @@ interface MultiFilterRowProps<TData> {
   i: number
   allOptions: DataTableFilterOption<TData>[]
   option: DataTableFilterOption<TData>
+  selectedOptions: DataTableFilterOption<TData>[]
   setSelectedOptions: React.Dispatch<
     React.SetStateAction<DataTableFilterOption<TData>[]>
   >
@@ -143,6 +147,7 @@ export function MultiFilterRow<TData>({
   i,
   option,
   allOptions,
+  selectedOptions,
   setSelectedOptions,
   operator,
   setOperator,
@@ -168,8 +173,15 @@ export function MultiFilterRow<TData>({
       (operator) => operator.value === option.filterOperator
     ) ?? comparisonOperators[0]
 
+  const [mounted, setMounted] = React.useState(false)
+
   // Update query string
   React.useEffect(() => {
+    if (!mounted) {
+      setMounted(true)
+      return
+    }
+
     if (option.options.length > 0) {
       // key=value1.value2.value3~operator
       const filterValues = option.filterValues ?? []
@@ -227,7 +239,7 @@ export function MultiFilterRow<TData>({
       (operator) => searchParams.get("operator") === operator.value
     )
 
-    if (operator) {
+    if (newOperator) {
       setOperator(newOperator)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -384,12 +396,21 @@ export function MultiFilterRow<TData>({
                 prev.filter((item) => item.id !== option.id)
               )
 
-              const newSearchParams = createQueryString(
-                {
-                  [String(option.value)]: null,
-                },
-                searchParams
+              // Only remove the option with no filter value
+              // if there are other options for the same column
+              const optionsForSameColumn = selectedOptions.filter(
+                (o) => o.id !== option.id && o.filterValues?.length
               )
+              if (optionsForSameColumn.length) return
+
+              const paramsObj: Record<string, null | string> = {
+                [String(option.value)]: null,
+              }
+              // Reset operator to "and" when the filter option being removed is the last one
+              if (selectedOptions.length === 1) {
+                paramsObj.operator = "and"
+              }
+              const newSearchParams = createQueryString(paramsObj, searchParams)
               router.push(`${pathname}?${newSearchParams}`, {
                 scroll: false,
               })
