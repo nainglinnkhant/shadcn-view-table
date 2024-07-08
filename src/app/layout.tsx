@@ -1,3 +1,5 @@
+import { Analytics } from "@vercel/analytics/react"
+
 import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
 import { SiteHeader } from "@/components/layouts/site-header"
@@ -102,6 +104,7 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
           <TailwindIndicator />
         </ThemeProvider>
         <Toaster richColors />
+        <Analytics />
       </body>
     </html>
   )
