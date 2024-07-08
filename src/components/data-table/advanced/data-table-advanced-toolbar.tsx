@@ -17,7 +17,10 @@ import { useTableInstanceContext } from "../table-instance-provider"
 import { DataTableFilterItem } from "./data-table-filter-item"
 import { DataTableMultiFilter } from "./data-table-multi-filter"
 import { CreateViewPopover } from "./views/create-view-popover"
-import { DataTableViewsDropdown } from "./views/data-table-views-dropdown"
+import {
+  DataTableViewsDropdown,
+  type ViewItem,
+} from "./views/data-table-views-dropdown"
 import UpdateViewForm from "./views/update-view-form"
 import {
   calcFilterParams,
@@ -121,8 +124,24 @@ export function DataTableAdvancedToolbar<TData>({
   const isUpdated =
     !isEqual(currentView?.filterParams, filterParams) || isColumnsUpdated
 
+  function resetColumns(view: ViewItem) {
+    table.setColumnVisibility(() => {
+      const newVisibilityState = COLUMNS.reduce(
+        (acc, item) => {
+          const isVisible = view.columns?.includes(item)
+          acc[item] = isVisible
+          return acc
+        },
+        {} as Partial<Record<(typeof COLUMNS)[number], boolean>>
+      )
+      return newVisibilityState
+    })
+  }
+
   function resetToCurrentView() {
     if (!currentView) return
+
+    resetColumns(currentView)
 
     const searchParamsURL = calcViewSearchParamsURL(currentView)
     router.push(`${pathname}?${searchParamsURL}`, {
@@ -142,19 +161,7 @@ export function DataTableAdvancedToolbar<TData>({
       return table.setColumnVisibility({})
     }
 
-    table.setColumnVisibility(() => {
-      const invisibleColumns = COLUMNS.filter(
-        (column) => !currentView.columns?.includes(column)
-      )
-      const newVisibilityState = invisibleColumns.reduce(
-        (acc, item) => {
-          acc[item] = false
-          return acc
-        },
-        {} as Partial<Record<(typeof COLUMNS)[number], boolean>>
-      )
-      return newVisibilityState
-    })
+    resetColumns(currentView)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [viewId])
 

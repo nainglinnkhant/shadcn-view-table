@@ -64,7 +64,9 @@ export function DataTableFilterCombobox<TData>({
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      {children ?? (
+      {children ? (
+        <PopoverTrigger asChild>{children}</PopoverTrigger>
+      ) : (
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>

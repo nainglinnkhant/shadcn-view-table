@@ -30,7 +30,7 @@ export function calcFilterParams<T = unknown>(
     .filter((option) => option.filterValues && option.filterValues.length > 0)
     .map((option) => ({
       field: option.value as Filter["field"],
-      value: `${option.filterValues?.join("~")}~${option.filterOperator}`,
+      value: `${option.filterValues?.join(".")}~${option.filterOperator}`,
       isMulti: !!option.isMulti,
     }))
   const filterParams: FilterParams = {
