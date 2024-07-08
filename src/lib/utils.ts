@@ -61,3 +61,8 @@ export function createQueryString(
 
   return newSearchParams.toString()
 }
+
+export function getIsMacOS() {
+  if (typeof navigator === "undefined") return false
+  return navigator.userAgent?.includes("Mac")
+}

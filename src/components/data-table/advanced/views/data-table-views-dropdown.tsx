@@ -2,7 +2,9 @@ import { useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import type { View } from "@/db/schema"
 import { CaretDownIcon, Pencil1Icon, PlusIcon } from "@radix-ui/react-icons"
+import { useHotkeys } from "react-hotkeys-hook"
 
+import { getIsMacOS } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
   Command,
@@ -18,6 +20,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { Separator } from "@/components/ui/separator"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import { Kbd } from "@/components/kbd"
 import type { FilterParams } from "@/app/_lib/validations"
 
 import { CreateViewForm } from "./create-view-form"
@@ -55,6 +64,11 @@ export function DataTableViewsDropdown({
     })
   }
 
+  const isMac = getIsMacOS()
+  useHotkeys(`${isMac ? "meta" : "ctrl"}+v`, () => {
+    setTimeout(() => setOpen(true), 100)
+  })
+
   return (
     <Popover
       open={open}
@@ -64,16 +78,32 @@ export function DataTableViewsDropdown({
         setIsEditViewFormOpen(false)
       }}
     >
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          className="flex w-36 justify-between"
-        >
-          <span className="truncate">{currentView?.name || "All tasks"}</span>
-          <CaretDownIcon aria-hidden="true" className="size-4 shrink-0" />
-        </Button>
-      </PopoverTrigger>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex w-36 justify-between"
+              >
+                <span className="truncate">
+                  {currentView?.name || "All tasks"}
+                </span>
+                <CaretDownIcon aria-hidden="true" className="size-4 shrink-0" />
+              </Button>
+            </PopoverTrigger>
+          </TooltipTrigger>
+          <TooltipContent className="flex items-center gap-2 border bg-accent font-semibold text-foreground dark:bg-background/95 dark:backdrop-blur-md dark:supports-[backdrop-filter]:bg-background/40">
+            Open views
+            <div>
+              <Kbd variant="outline">{isMac ? "⌘" : "ctrl"}</Kbd>{" "}
+              <Kbd variant="outline">V</Kbd>
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+
       <PopoverContent
         className="w-[12.5rem] p-0 dark:bg-background/95 dark:backdrop-blur-md dark:supports-[backdrop-filter]:bg-background/40"
         align="start"

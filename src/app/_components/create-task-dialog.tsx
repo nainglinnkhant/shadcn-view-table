@@ -5,6 +5,7 @@ import { tasks } from "@/db/schema"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { PlusIcon } from "@radix-ui/react-icons"
 import { useForm } from "react-hook-form"
+import { useHotkeys } from "react-hotkeys-hook"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -35,6 +36,13 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import { Kbd } from "@/components/kbd"
 import { LoaderIcon } from "@/components/loader-icon"
 
 import { createTask } from "../_lib/actions"
@@ -63,14 +71,31 @@ export function CreateTaskDialog() {
     })
   }
 
+  useHotkeys("shift+n", () => {
+    setTimeout(() => setOpen(true), 100)
+  })
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
-          <PlusIcon className="mr-2 size-4" aria-hidden="true" />
-          New task
-        </Button>
-      </DialogTrigger>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm">
+                <PlusIcon className="mr-2 size-4" aria-hidden="true" />
+                New task
+              </Button>
+            </DialogTrigger>
+          </TooltipTrigger>
+          <TooltipContent className="flex items-center gap-2 border bg-accent font-semibold text-foreground dark:bg-background/95 dark:backdrop-blur-md dark:supports-[backdrop-filter]:bg-background/40">
+            Add new task
+            <div>
+              <Kbd variant="outline">⇧</Kbd> <Kbd variant="outline">N</Kbd>
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Create task</DialogTitle>

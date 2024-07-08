@@ -77,7 +77,7 @@ export function TasksTableFloatingBar({ table }: TasksTableFloatingBarProps) {
                   />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent className="flex items-center border bg-accent px-2 py-1 font-semibold text-foreground dark:bg-zinc-900">
+              <TooltipContent className="flex items-center border bg-accent px-2 py-1 font-semibold text-foreground dark:bg-background/95 dark:backdrop-blur-md dark:supports-[backdrop-filter]:bg-background/40">
                 <p className="mr-2">Clear selection</p>
                 <Kbd abbrTitle="Escape" variant="outline">
                   Esc
@@ -129,7 +129,7 @@ export function TasksTableFloatingBar({ table }: TasksTableFloatingBarProps) {
                     </Button>
                   </TooltipTrigger>
                 </SelectTrigger>
-                <TooltipContent className="border bg-accent font-semibold text-foreground dark:bg-zinc-900">
+                <TooltipContent className="border bg-accent font-semibold text-foreground dark:bg-background/95 dark:backdrop-blur-md dark:supports-[backdrop-filter]:bg-background/40">
                   <p>Update status</p>
                 </TooltipContent>
               </Tooltip>
@@ -186,7 +186,7 @@ export function TasksTableFloatingBar({ table }: TasksTableFloatingBarProps) {
                     </Button>
                   </TooltipTrigger>
                 </SelectTrigger>
-                <TooltipContent className="border bg-accent font-semibold text-foreground dark:bg-zinc-900">
+                <TooltipContent className="border bg-accent font-semibold text-foreground dark:bg-background/95 dark:backdrop-blur-md dark:supports-[backdrop-filter]:bg-background/40">
                   <p>Update priority</p>
                 </TooltipContent>
               </Tooltip>
@@ -232,7 +232,7 @@ export function TasksTableFloatingBar({ table }: TasksTableFloatingBarProps) {
                   )}
                 </Button>
               </TooltipTrigger>
-              <TooltipContent className="border bg-accent font-semibold text-foreground dark:bg-zinc-900">
+              <TooltipContent className="border bg-accent font-semibold text-foreground dark:bg-background/95 dark:backdrop-blur-md dark:supports-[backdrop-filter]:bg-background/40">
                 <p>Export tasks</p>
               </TooltipContent>
             </Tooltip>
@@ -270,7 +270,7 @@ export function TasksTableFloatingBar({ table }: TasksTableFloatingBarProps) {
                   )}
                 </Button>
               </TooltipTrigger>
-              <TooltipContent className="border bg-accent font-semibold text-foreground dark:bg-zinc-900">
+              <TooltipContent className="border bg-accent font-semibold text-foreground dark:bg-background/95 dark:backdrop-blur-md dark:supports-[backdrop-filter]:bg-background/40">
                 <p>Delete tasks</p>
               </TooltipContent>
             </Tooltip>
