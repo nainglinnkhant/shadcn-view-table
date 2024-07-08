@@ -66,9 +66,9 @@ export function DataTableViewsDropdown({
         <Button
           variant="outline"
           size="sm"
-          className="flex w-36 justify-between truncate"
+          className="flex w-36 justify-between"
         >
-          {currentView?.name || "All tasks"}
+          <span className="truncate">{currentView?.name || "All tasks"}</span>
           <CaretDownIcon aria-hidden="true" className="size-4 shrink-0" />
         </Button>
       </PopoverTrigger>

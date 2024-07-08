@@ -107,10 +107,11 @@ export function DataTableMultiFilter<TData>({
             onClick={() => {
               setSelectedOptions((prev) => prev.filter((item) => !item.isMulti))
 
-              const paramsObj: Record<string, null> = {}
+              const paramsObj: Record<string, null | string> = {}
               for (const option of options) {
                 paramsObj[option.value as string] = null
               }
+              paramsObj.operator = "and"
 
               const newSearchParams = createQueryString(paramsObj, searchParams)
               router.push(`${pathname}?${newSearchParams}`, {

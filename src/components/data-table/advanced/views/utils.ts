@@ -50,7 +50,8 @@ export function calcViewSearchParamsURL(view: ViewItem) {
 
   for (const item of filterParams.filters ?? []) {
     if (FILTERABLE_FIELDS.includes(item.field)) {
-      searchParamsObj[item.field] = item.value
+      const value = item.isMulti ? `${item.value}~multi` : item.value
+      searchParamsObj[item.field] = value
     }
   }
   if (filterParams.operator) {
