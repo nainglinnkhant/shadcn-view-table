@@ -21,8 +21,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useTableInstanceContext } from "@/app/_components/table-instance-provider"
 
+import { useTableInstanceContext } from "../table-instance-provider"
 import { DataTableAdvancedFacetedFilter } from "./data-table-advanced-faceted-filter"
 
 interface DataTableFilterItemProps<TData> {

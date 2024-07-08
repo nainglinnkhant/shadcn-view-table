@@ -33,9 +33,9 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
-import { useTableInstanceContext } from "@/app/_components/table-instance-provider"
 
 import { DataTableFacetedFilter } from "../data-table-faceted-filter"
+import { useTableInstanceContext } from "../table-instance-provider"
 
 interface DataTableMultiFilterProps<TData> {
   allOptions: DataTableFilterOption<TData>[]

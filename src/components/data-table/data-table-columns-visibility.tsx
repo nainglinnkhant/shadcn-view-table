@@ -11,7 +11,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useTableInstanceContext } from "@/app/_components/table-instance-provider"
+
+import { useTableInstanceContext } from "./table-instance-provider"
 
 export function DataTableColumnsVisibility() {
   const { tableInstance: table } = useTableInstanceContext()

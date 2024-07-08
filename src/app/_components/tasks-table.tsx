@@ -10,7 +10,7 @@ import { DataTable } from "@/components/data-table/data-table"
 
 import type { getTasks, getViews } from "../_lib/queries"
 import { getPriorityIcon, getStatusIcon } from "../_lib/utils"
-import { TableInstanceProvider } from "./table-instance-provider"
+import { TableInstanceProvider } from "../../components/data-table/table-instance-provider"
 import { getColumns } from "./tasks-table-columns"
 import { TasksTableFloatingBar } from "./tasks-table-floating-bar"
 import { TasksTableToolbarActions } from "./tasks-table-toolbar-actions"

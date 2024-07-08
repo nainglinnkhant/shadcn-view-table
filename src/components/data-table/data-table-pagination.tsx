@@ -14,7 +14,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useTableInstanceContext } from "@/app/_components/table-instance-provider"
+
+import { useTableInstanceContext } from "./table-instance-provider"
 
 interface DataTablePaginationProps {
   pageSizeOptions?: number[]

@@ -8,10 +8,10 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { LoaderIcon } from "@/components/loader-icon"
-import { useTableInstanceContext } from "@/app/_components/table-instance-provider"
 import { createView } from "@/app/_lib/actions"
 import type { FilterParams } from "@/app/_lib/validations"
 
+import { useTableInstanceContext } from "../../table-instance-provider"
 import { calcViewSearchParamsURL } from "./utils"
 
 interface CreateViewFormProps {

@@ -4,10 +4,10 @@ import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { LoaderIcon } from "@/components/loader-icon"
-import { useTableInstanceContext } from "@/app/_components/table-instance-provider"
 import { editView } from "@/app/_lib/actions"
 import type { FilterParams } from "@/app/_lib/validations"
 
+import { useTableInstanceContext } from "../../table-instance-provider"
 import type { ViewItem } from "./data-table-views-dropdown"
 
 interface UpdateViewFormProps {
