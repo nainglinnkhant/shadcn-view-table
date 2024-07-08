@@ -2,7 +2,6 @@ import * as React from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import type { DataTableFilterOption } from "@/types"
 import { TrashIcon } from "@radix-ui/react-icons"
-import type { Table } from "@tanstack/react-table"
 
 import { dataTableConfig } from "@/config/data-table"
 import { cn, createQueryString } from "@/lib/utils"
@@ -22,11 +21,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { useTableInstanceContext } from "@/app/_components/table-instance-provider"
 
 import { DataTableAdvancedFacetedFilter } from "./data-table-advanced-faceted-filter"
 
 interface DataTableFilterItemProps<TData> {
-  table: Table<TData>
   selectedOption: DataTableFilterOption<TData>
   setSelectedOptions: React.Dispatch<
     React.SetStateAction<DataTableFilterOption<TData>[]>
@@ -35,7 +34,6 @@ interface DataTableFilterItemProps<TData> {
 }
 
 export function DataTableFilterItem<TData>({
-  table,
   selectedOption,
   setSelectedOptions,
   defaultOpen,
@@ -43,6 +41,8 @@ export function DataTableFilterItem<TData>({
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+
+  const { tableInstance: table } = useTableInstanceContext()
 
   const column = table.getColumn(
     selectedOption.value ? String(selectedOption.value) : ""

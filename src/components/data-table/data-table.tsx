@@ -23,7 +23,7 @@ interface DataTableProps<TData> extends React.HTMLAttributes<HTMLDivElement> {
    * The floating bar to render at the bottom of the table on row selection.
    * @default null
    * @type React.ReactNode | null
-   * @example floatingBar={<TasksTableFloatingBar table={table} />}
+   * @example floatingBar={<TasksTableFloatingBar />}
    */
   floatingBar?: React.ReactNode | null
 }
@@ -92,7 +92,7 @@ export function DataTable<TData>({
         </Table>
       </div>
       <div className="flex flex-col gap-2.5">
-        <DataTablePagination table={table} />
+        <DataTablePagination />
         {table.getFilteredSelectedRowModel().rows.length > 0 && floatingBar}
       </div>
     </div>

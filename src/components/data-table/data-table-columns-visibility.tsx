@@ -1,7 +1,6 @@
 "use client"
 
 import { LayoutIcon } from "@radix-ui/react-icons"
-import type { Table } from "@tanstack/react-table"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -12,14 +11,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useTableInstanceContext } from "@/app/_components/table-instance-provider"
 
-interface DataTableColumnsVisibility<TData> {
-  table: Table<TData>
-}
+export function DataTableColumnsVisibility() {
+  const { tableInstance: table } = useTableInstanceContext()
 
-export function DataTableColumnsVisibility<TData>({
-  table,
-}: DataTableColumnsVisibility<TData>) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

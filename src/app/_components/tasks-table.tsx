@@ -82,11 +82,7 @@ export function TasksTable({ tasksPromise, viewsPromise }: TasksTableProps) {
         table={table}
         floatingBar={<TasksTableFloatingBar table={table} />}
       >
-        <DataTableAdvancedToolbar
-          table={table}
-          filterFields={filterFields}
-          views={views}
-        >
+        <DataTableAdvancedToolbar filterFields={filterFields} views={views}>
           <TasksTableToolbarActions table={table} />
         </DataTableAdvancedToolbar>
       </DataTable>

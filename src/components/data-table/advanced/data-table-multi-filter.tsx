@@ -7,7 +7,6 @@ import {
   TextAlignCenterIcon,
   TrashIcon,
 } from "@radix-ui/react-icons"
-import type { Table } from "@tanstack/react-table"
 
 import { dataTableConfig, type DataTableConfig } from "@/config/data-table"
 import { createQueryString } from "@/lib/utils"
@@ -34,11 +33,11 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
+import { useTableInstanceContext } from "@/app/_components/table-instance-provider"
 
 import { DataTableFacetedFilter } from "../data-table-faceted-filter"
 
 interface DataTableMultiFilterProps<TData> {
-  table: Table<TData>
   allOptions: DataTableFilterOption<TData>[]
   options: DataTableFilterOption<TData>[]
   setSelectedOptions: React.Dispatch<
@@ -48,7 +47,6 @@ interface DataTableMultiFilterProps<TData> {
 }
 
 export function DataTableMultiFilter<TData>({
-  table,
   allOptions,
   options,
   setSelectedOptions,
@@ -89,7 +87,6 @@ export function DataTableMultiFilter<TData>({
               key={option.id ?? i}
               i={i}
               option={option}
-              table={table}
               allOptions={allOptions}
               setSelectedOptions={setSelectedOptions}
               operator={operator}
@@ -129,7 +126,6 @@ export function DataTableMultiFilter<TData>({
 
 interface MultiFilterRowProps<TData> {
   i: number
-  table: Table<TData>
   allOptions: DataTableFilterOption<TData>[]
   option: DataTableFilterOption<TData>
   setSelectedOptions: React.Dispatch<
@@ -145,7 +141,6 @@ interface MultiFilterRowProps<TData> {
 
 export function MultiFilterRow<TData>({
   i,
-  table,
   option,
   allOptions,
   setSelectedOptions,
@@ -158,6 +153,8 @@ export function MultiFilterRow<TData>({
 
   const value = option.filterValues?.[0] ?? ""
   const debounceValue = useDebounce(value, 500)
+
+  const { tableInstance: table } = useTableInstanceContext()
 
   const column = table.getColumn(option.value ? String(option.value) : "")
 

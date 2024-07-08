@@ -6,7 +6,6 @@ import {
   DoubleArrowLeftIcon,
   DoubleArrowRightIcon,
 } from "@radix-ui/react-icons"
-import { type Table } from "@tanstack/react-table"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -16,28 +15,29 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { useTableInstanceContext } from "@/app/_components/table-instance-provider"
 
-interface DataTablePaginationProps<TData> {
-  table: Table<TData>
+interface DataTablePaginationProps {
   pageSizeOptions?: number[]
 }
 
-export function DataTablePagination<TData>({
-  table,
+export function DataTablePagination({
   pageSizeOptions = [10, 20, 30, 40, 50],
-}: DataTablePaginationProps<TData>) {
+}: DataTablePaginationProps) {
   const searchParams = useSearchParams()
+
+  const { tableInstance: table } = useTableInstanceContext()
+
+  const page = searchParams.get("page")
+  const perPage = searchParams.get("per_page")
 
   // Update pagination state when pagination params are changed
   useEffect(() => {
-    const page = searchParams.get("page")
-    const perPage = searchParams.get("per_page")
-
     table.setPageIndex(page ? Number(page) - 1 : 0)
 
     table.setPageSize(perPage ? Number(perPage) : 10)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams])
+  }, [page, perPage])
 
   return (
     <div className="flex w-full flex-col-reverse items-center justify-between gap-4 overflow-auto p-1 sm:flex-row sm:gap-8">
@@ -51,6 +51,7 @@ export function DataTablePagination<TData>({
           <Select
             value={`${table.getState().pagination.pageSize}`}
             onValueChange={(value) => {
+              table.setPageIndex(0)
               table.setPageSize(Number(value))
             }}
           >

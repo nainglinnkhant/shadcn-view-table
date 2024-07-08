@@ -5,13 +5,13 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import type { View } from "@/db/schema"
 import type { DataTableFilterField, DataTableFilterOption } from "@/types"
 import { CaretSortIcon, PlusIcon } from "@radix-ui/react-icons"
-import type { Table } from "@tanstack/react-table"
 import isEqual from "lodash.isequal"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { DataTableFilterCombobox } from "@/components/data-table/advanced/data-table-filter-combobox"
 import { DataTableColumnsVisibility } from "@/components/data-table/data-table-columns-visibility"
+import { useTableInstanceContext } from "@/app/_components/table-instance-provider"
 import type { SearchParams } from "@/app/_lib/validations"
 
 import { DataTableFilterItem } from "./data-table-filter-item"
@@ -28,13 +28,11 @@ import {
 
 interface DataTableAdvancedToolbarProps<TData>
   extends React.HTMLAttributes<HTMLDivElement> {
-  table: Table<TData>
   filterFields?: DataTableFilterField<TData>[]
   views: Omit<View, "createdAt" | "updatedAt">[]
 }
 
 export function DataTableAdvancedToolbar<TData>({
-  table,
   filterFields = [],
   views,
   children,
@@ -44,6 +42,8 @@ export function DataTableAdvancedToolbar<TData>({
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+
+  const { tableInstance: table } = useTableInstanceContext()
 
   const options = React.useMemo<DataTableFilterOption<TData>[]>(() => {
     return filterFields.map((field) => {
@@ -218,7 +218,7 @@ export function DataTableAdvancedToolbar<TData>({
               onSelect={onFilterComboboxItemSelect}
             />
           )}
-          <DataTableColumnsVisibility table={table} />
+          <DataTableColumnsVisibility />
         </div>
       </div>
       <div
@@ -232,7 +232,6 @@ export function DataTableAdvancedToolbar<TData>({
           .map((selectedOption) => (
             <DataTableFilterItem
               key={String(selectedOption.value)}
-              table={table}
               selectedOption={selectedOption}
               setSelectedOptions={setSelectedOptions}
               defaultOpen={openCombobox}
@@ -240,7 +239,6 @@ export function DataTableAdvancedToolbar<TData>({
           ))}
         {selectedOptions.some((option) => option.isMulti) ? (
           <DataTableMultiFilter
-            table={table}
             allOptions={options}
             options={multiFilterOptions}
             setSelectedOptions={setSelectedOptions}
