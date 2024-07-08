@@ -12,7 +12,7 @@ Shadcn table component with server side sorting, pagination, filtering, and cust
 - Supabase
 - Zod
 
-## Getting Started
+## Running locally
 
 1. Clone the repository
 
@@ -32,14 +32,16 @@ Shadcn table component with server side sorting, pagination, filtering, and cust
    cp .env.example .env
    ```
 
-4. Start the development server
+4. Push the database schema
+
+   ```bash
+   pnpm db:push
+   ```
+
+5. Start the development server
 
    ```bash
    pnpm dev
    ```
 
-5. Push the database schema
-
-   ```bash
-   pnpm db:push
-   ```
+You can read more about setting up your own table [here](https://github.com/sadmann7/shadcn-table?tab=readme-ov-file#build-your-own-table).

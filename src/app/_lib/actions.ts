@@ -229,7 +229,7 @@ export async function createView(
       viewId = newView.id
 
       const allViews = await db.select({ id: views.id }).from(views)
-      if (allViews.length === 10) {
+      if (allViews.length >= 10) {
         await tx.delete(views).where(
           eq(
             views.id,
