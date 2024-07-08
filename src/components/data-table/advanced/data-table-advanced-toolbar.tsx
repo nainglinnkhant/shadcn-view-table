@@ -125,7 +125,9 @@ export function DataTableAdvancedToolbar<TData>({
     if (!currentView) return
 
     const searchParamsURL = calcViewSearchParamsURL(currentView)
-    router.push(`${pathname}?${searchParamsURL}`)
+    router.push(`${pathname}?${searchParamsURL}`, {
+      scroll: false,
+    })
   }
 
   React.useEffect(() => {
@@ -156,6 +158,10 @@ export function DataTableAdvancedToolbar<TData>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [viewId])
 
+  const title = searchParams.get("title")
+  const status = searchParams.get("status")
+  const priority = searchParams.get("priority")
+
   // Update table state when search params are changed
   React.useEffect(() => {
     const searchParamsObj = Object.fromEntries(searchParams)
@@ -182,7 +188,7 @@ export function DataTableAdvancedToolbar<TData>({
       setOpenFilterBuilder(true)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams])
+  }, [title, status, priority])
 
   return (
     <div

@@ -231,7 +231,7 @@ export function MultiFilterRow<TData>({
       setOperator(newOperator)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams])
+  }, [searchParams.get("operator")])
 
   return (
     <div className="flex items-center space-x-2">
@@ -267,6 +267,7 @@ export function MultiFilterRow<TData>({
         <div key={operator?.value}>{operator?.label}</div>
       )}
       <Select
+        disabled={!!option.filterValues?.filter(Boolean).length}
         value={String(option.value)}
         onValueChange={(value) => {
           const chosenOption = allOptions.find(

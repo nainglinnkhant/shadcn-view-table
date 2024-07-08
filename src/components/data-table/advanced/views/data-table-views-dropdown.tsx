@@ -50,7 +50,9 @@ export function DataTableViewsDropdown({
 
   function selectView(view: ViewItem) {
     const searchParamsURL = calcViewSearchParamsURL(view)
-    router.push(`${pathname}?${searchParamsURL}`)
+    router.push(`${pathname}?${searchParamsURL}`, {
+      scroll: false,
+    })
   }
 
   return (
@@ -101,7 +103,7 @@ export function DataTableViewsDropdown({
                 <CommandItem
                   value="All tasks"
                   onSelect={() => {
-                    router.push(pathname)
+                    router.push(pathname, { scroll: false })
                     setOpen(false)
                   }}
                 >
