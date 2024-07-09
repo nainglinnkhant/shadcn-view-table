@@ -129,7 +129,7 @@ export function DataTableViewsDropdown({
             <CommandInput placeholder="View name" />
             <CommandList>
               <CommandEmpty>No item found.</CommandEmpty>
-              <CommandGroup className="max-h-48">
+              <CommandGroup className="max-h-48 overflow-auto">
                 <CommandItem
                   value="All tasks"
                   onSelect={() => {
