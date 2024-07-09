@@ -141,4 +141,5 @@ export async function getViews() {
       filterParams: views.filterParams,
     })
     .from(views)
+    .orderBy(desc(views.createdAt))
 }

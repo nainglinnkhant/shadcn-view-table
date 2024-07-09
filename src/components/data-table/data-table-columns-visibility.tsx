@@ -76,6 +76,7 @@ export function DataTableColumnsVisibility() {
                 className="capitalize"
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                onSelect={(e) => e.preventDefault()}
               >
                 <span className="truncate">{column.id}</span>
               </DropdownMenuCheckboxItem>
