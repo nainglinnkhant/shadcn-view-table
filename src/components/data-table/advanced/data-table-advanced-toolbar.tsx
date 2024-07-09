@@ -150,10 +150,10 @@ export function DataTableAdvancedToolbar<TData>({
   }
 
   React.useEffect(() => {
-    if (isColumnsUpdated) {
+    if (isDefaultViewUpdated) {
       setOpenFilterBuilder(true)
     }
-  }, [isColumnsUpdated])
+  }, [isDefaultViewUpdated])
 
   // Update visible columns when viewId is changed
   React.useEffect(() => {
