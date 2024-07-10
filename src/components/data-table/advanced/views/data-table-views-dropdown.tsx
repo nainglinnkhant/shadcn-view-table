@@ -85,7 +85,7 @@ export function DataTableViewsDropdown({
               <Button
                 variant="outline"
                 size="sm"
-                className="flex w-36 justify-between"
+                className="flex w-36 shrink-0 justify-between"
               >
                 <span className="truncate">
                   {currentView?.name || "All tasks"}

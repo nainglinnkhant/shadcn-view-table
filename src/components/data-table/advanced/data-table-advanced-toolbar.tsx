@@ -205,7 +205,7 @@ export function DataTableAdvancedToolbar<TData>({
       )}
       {...props}
     >
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col items-end justify-between gap-3 sm:flex-row sm:items-center">
         <DataTableViewsDropdown views={views} filterParams={filterParams} />
 
         <div className="flex items-center gap-2">
