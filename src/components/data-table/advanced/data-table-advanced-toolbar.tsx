@@ -234,50 +234,52 @@ export function DataTableAdvancedToolbar<TData>({
           <DataTableColumnsVisibility />
         </div>
       </div>
-      <div
-        className={cn(
-          "flex h-8 items-center gap-2",
-          !openFilterBuilder && "hidden"
+      <div className="flex items-center justify-between">
+        {openFilterBuilder && (
+          <div className="flex h-8 items-center gap-2">
+            {selectedOptions
+              .filter((option) => !option.isMulti)
+              .map((selectedOption) => (
+                <DataTableFilterItem
+                  key={String(selectedOption.value)}
+                  selectedOption={selectedOption}
+                  setSelectedOptions={setSelectedOptions}
+                  defaultOpen={openCombobox}
+                />
+              ))}
+            {selectedOptions.some((option) => option.isMulti) ? (
+              <DataTableMultiFilter
+                allOptions={options}
+                options={multiFilterOptions}
+                selectedOptions={selectedOptions}
+                setSelectedOptions={setSelectedOptions}
+                defaultOpen={openCombobox}
+              />
+            ) : null}
+            {selectableOptions.length > 0 ? (
+              <DataTableFilterCombobox
+                selectableOptions={selectableOptions}
+                selectedOptions={selectedOptions}
+                setSelectedOptions={setSelectedOptions}
+                onSelect={onFilterComboboxItemSelect}
+              >
+                <Button
+                  variant="outline"
+                  size="sm"
+                  role="combobox"
+                  className="h-7 rounded-full"
+                  onClick={() => setOpenCombobox(true)}
+                >
+                  <PlusIcon
+                    className="mr-2 size-4 opacity-50"
+                    aria-hidden="true"
+                  />
+                  Add filter
+                </Button>
+              </DataTableFilterCombobox>
+            ) : null}
+          </div>
         )}
-      >
-        {selectedOptions
-          .filter((option) => !option.isMulti)
-          .map((selectedOption) => (
-            <DataTableFilterItem
-              key={String(selectedOption.value)}
-              selectedOption={selectedOption}
-              setSelectedOptions={setSelectedOptions}
-              defaultOpen={openCombobox}
-            />
-          ))}
-        {selectedOptions.some((option) => option.isMulti) ? (
-          <DataTableMultiFilter
-            allOptions={options}
-            options={multiFilterOptions}
-            selectedOptions={selectedOptions}
-            setSelectedOptions={setSelectedOptions}
-            defaultOpen={openCombobox}
-          />
-        ) : null}
-        {selectableOptions.length > 0 ? (
-          <DataTableFilterCombobox
-            selectableOptions={selectableOptions}
-            selectedOptions={selectedOptions}
-            setSelectedOptions={setSelectedOptions}
-            onSelect={onFilterComboboxItemSelect}
-          >
-            <Button
-              variant="outline"
-              size="sm"
-              role="combobox"
-              className="h-7 rounded-full"
-              onClick={() => setOpenCombobox(true)}
-            >
-              <PlusIcon className="mr-2 size-4 opacity-50" aria-hidden="true" />
-              Add filter
-            </Button>
-          </DataTableFilterCombobox>
-        ) : null}
 
         <div className="ml-auto flex items-center gap-2">
           {isUpdated && currentView && (
