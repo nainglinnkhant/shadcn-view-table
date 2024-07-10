@@ -123,13 +123,13 @@ export function DateRangePicker({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [date?.from, date?.to])
 
-  React.useEffect(() => {
-    const dateRange = calcDateRange()
+  // React.useEffect(() => {
+  //   const dateRange = calcDateRange()
 
-    setDate(dateRange)
+  //   setDate(dateRange)
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fromParam, toParam])
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [fromParam, toParam])
 
   return (
     <div className="grid gap-2">
