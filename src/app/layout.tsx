@@ -20,16 +20,6 @@ export const metadata: Metadata = {
     template: `%s - ${siteConfig.name}`,
   },
   description: siteConfig.description,
-  keywords: [
-    "nextjs",
-    "react",
-    "react server components",
-    "table",
-    "react-table",
-    "tanstack-table",
-    "shadcn-table",
-    "shadcn-view-table",
-  ],
   authors: [
     {
       name: "sadmann7",
@@ -47,14 +37,14 @@ export const metadata: Metadata = {
     title: siteConfig.name,
     description: siteConfig.description,
     siteName: siteConfig.name,
-    images: [`${siteConfig.url}/og.png`],
+    images: [`${siteConfig.url}/opengraph-image.png`],
   },
   twitter: {
     card: "summary_large_image",
     title: siteConfig.name,
     description: siteConfig.description,
     creator: "@nainglk",
-    images: [`${siteConfig.url}/og.png`],
+    images: [`${siteConfig.url}/opengraph-image.png`],
   },
   icons: {
     icon: [
