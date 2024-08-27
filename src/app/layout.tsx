@@ -37,6 +37,7 @@ export const metadata: Metadata = {
     },
     {
       name: "nainglinnkhant",
+      url: "https://nainglinnkhant.com",
     },
   ],
   openGraph: {
@@ -46,12 +47,14 @@ export const metadata: Metadata = {
     title: siteConfig.name,
     description: siteConfig.description,
     siteName: siteConfig.name,
+    images: [`${siteConfig.url}/og.png`],
   },
   twitter: {
     card: "summary_large_image",
     title: siteConfig.name,
     description: siteConfig.description,
-    images: [`${siteConfig.url}/og.jpg`],
+    creator: "@nainglk",
+    images: [`${siteConfig.url}/og.png`],
   },
   icons: {
     icon: [
