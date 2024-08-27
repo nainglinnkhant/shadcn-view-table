@@ -2,6 +2,8 @@
 
 Shadcn table component with server side sorting, pagination, filtering, and custom views. This is built on top of [@sadmann17](https://x.com/sadmann17)'s [shadcn-table](https://github.com/sadmann7/shadcn-table).
 
+<img width="1440" alt="Screenshot 2024-07-10 at 5 46 33 PM" src="https://github.com/user-attachments/assets/ef0f9158-02f0-49de-bc14-3905324ca322">
+
 ## Tech Stack
 
 - Next.js
